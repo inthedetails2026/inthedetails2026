@@ -7,11 +7,10 @@ import { getErrorMessage } from "@/lib/handle-error"
 import { uploadFiles } from "@/lib/uploadthing"
 import { type OurFileRouter } from "@/app/api/uploadthing/core"
 
-interface UseUploadFileProps
-  extends Pick<
-    UploadFilesOptions<OurFileRouter, keyof OurFileRouter>,
-    "headers" | "onUploadBegin" | "onUploadProgress" | "skipPolling"
-  > {
+interface UseUploadFileProps extends Pick<
+  UploadFilesOptions<OurFileRouter, keyof OurFileRouter>,
+  "headers" | "onUploadBegin" | "onUploadProgress" | "skipPolling"
+> {
   defaultUploadedFiles?: StoredFile[]
 }
 

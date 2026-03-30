@@ -6,21 +6,21 @@ import { env } from "@/env.js"
 import { eq } from "drizzle-orm"
 
 import { getOrderLineItems } from "@/lib/actions/order"
-import { getPaymentIntent } from "@/lib/actions/stripe"
 import { saveOrder } from "@/lib/actions/save-order"
+import { getPaymentIntent } from "@/lib/actions/stripe"
 import { cn, formatPrice } from "@/lib/utils"
-import { CartReset } from "@/components/checkout/cart-reset"
 import { buttonVariants } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
-import { WhatsAppButton } from "@/components/whatsapp-button"
 import { CartLineItems } from "@/components/checkout/cart-line-items"
+import { CartReset } from "@/components/checkout/cart-reset"
 import { VerifyOderForm } from "@/components/checkout/verify-order-form"
 import {
   PageHeader,
   PageHeaderDescription,
   PageHeaderHeading,
 } from "@/components/page-header"
+import { WhatsAppButton } from "@/components/whatsapp-button"
 
 export const metadata: Metadata = {
   metadataBase: new URL(env.NEXT_PUBLIC_APP_URL),
@@ -90,24 +90,49 @@ export default async function OrderSuccessPage({
           >
             <PageHeaderHeading>Order Complete!</PageHeaderHeading>
             <PageHeaderDescription>
-              Order ID: <span className="text-foreground font-mono font-medium">{paymentIntent?.id}</span>
+              Order ID:{" "}
+              <span className="font-mono font-medium text-foreground">
+                {paymentIntent?.id}
+              </span>
             </PageHeaderDescription>
           </PageHeader>
 
-          <section className="container max-w-7xl grid gap-6">
+          <section className="container grid max-w-7xl gap-6">
             <div className="rounded-lg border bg-card p-6 shadow-sm">
-              <h3 className="text-lg font-semibold mb-4">Delivery Information</h3>
+              <h3 className="mb-4 text-lg font-semibold">
+                Delivery Information
+              </h3>
               <div className="grid gap-2 text-sm text-muted-foreground">
-                <p><span className="font-medium text-foreground">Customer:</span> {paymentIntent?.shipping?.name}</p>
-                <p><span className="font-medium text-foreground">Address:</span> {paymentIntent?.shipping?.address?.line1}, {paymentIntent?.shipping?.address?.city}, {paymentIntent?.shipping?.address?.country}</p>
-                {paymentIntent?.shipping?.address?.line2 && <p>{paymentIntent?.shipping?.address?.line2}</p>}
-                {paymentIntent?.shipping?.phone && <p><span className="font-medium text-foreground">Phone:</span> {paymentIntent?.shipping?.phone}</p>}
-                <p className="mt-2 font-medium text-primary italic">"We will be in touch with you as soon as possible for the delivery"</p>
+                <p>
+                  <span className="font-medium text-foreground">Customer:</span>{" "}
+                  {paymentIntent?.shipping?.name}
+                </p>
+                <p>
+                  <span className="font-medium text-foreground">Address:</span>{" "}
+                  {paymentIntent?.shipping?.address?.line1},{" "}
+                  {paymentIntent?.shipping?.address?.city},{" "}
+                  {paymentIntent?.shipping?.address?.country}
+                </p>
+                {paymentIntent?.shipping?.address?.line2 && (
+                  <p>{paymentIntent?.shipping?.address?.line2}</p>
+                )}
+                {paymentIntent?.shipping?.phone && (
+                  <p>
+                    <span className="font-medium text-foreground">Phone:</span>{" "}
+                    {paymentIntent?.shipping?.phone}
+                  </p>
+                )}
+                <p className="mt-2 font-medium italic text-primary">
+                  "We will be in touch with you as soon as possible for the
+                  delivery"
+                </p>
               </div>
               <div className="mt-6 flex flex-col gap-4">
-                <p className="text-sm font-medium">Need help with your delivery?</p>
-                <WhatsAppButton 
-                  variant="inline" 
+                <p className="text-sm font-medium">
+                  Need help with your delivery?
+                </p>
+                <WhatsAppButton
+                  variant="inline"
                   message={`Hi! I just placed an order (ID: ${paymentIntent?.id}) at In the Details shop and would like to follow up. How can you help me today?`}
                   className="w-fit"
                 />
@@ -117,20 +142,28 @@ export default async function OrderSuccessPage({
             <Separator />
 
             <div className="flex flex-col space-y-4">
-              <h3 className="text-lg font-semibold text-center md:text-left">Order Summary</h3>
+              <h3 className="text-center text-lg font-semibold md:text-left">
+                Order Summary
+              </h3>
               <CartLineItems
                 items={lineItems}
                 isEditable={false}
                 className="w-full"
               />
-              <div className="flex w-full items-center font-bold text-lg pt-4">
-                <span className="flex-1 text-muted-foreground font-medium">
-                  Total ({lineItems.reduce((acc, item) => acc + Number(item.quantity), 0)} items)
+              <div className="flex w-full items-center pt-4 text-lg font-bold">
+                <span className="flex-1 font-medium text-muted-foreground">
+                  Total (
+                  {lineItems.reduce(
+                    (acc, item) => acc + Number(item.quantity),
+                    0
+                  )}{" "}
+                  items)
                 </span>
                 <span>
                   {formatPrice(
                     lineItems.reduce(
-                      (acc, item) => acc + Number(item.price) * Number(item.quantity),
+                      (acc, item) =>
+                        acc + Number(item.price) * Number(item.quantity),
                       0
                     )
                   )}

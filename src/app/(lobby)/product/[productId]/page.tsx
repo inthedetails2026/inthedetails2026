@@ -4,8 +4,10 @@ import { notFound } from "next/navigation"
 import { db } from "@/db"
 import { categories, products, stores } from "@/db/schema"
 import { env } from "@/env.js"
+import type { StoredFile } from "@/types"
 import { and, desc, eq, not } from "drizzle-orm"
 
+import { safeParseImages } from "@/lib/images"
 import { formatPrice, toTitleCase } from "@/lib/utils"
 import {
   Accordion,
@@ -52,9 +54,6 @@ export async function generateMetadata({
     description: product.description,
   }
 }
-
-import { safeParseImages } from "@/lib/images"
-import type { StoredFile } from "@/types"
 
 export default async function ProductPage({ params }: ProductPageProps) {
   const productId = decodeURIComponent(params.productId)

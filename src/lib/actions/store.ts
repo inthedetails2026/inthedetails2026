@@ -8,11 +8,10 @@ import {
 import { redirect } from "next/navigation"
 import { db } from "@/db"
 import { stores } from "@/db/schema"
-import { createClient } from "@/lib/supabase/server"
 import { and, desc, eq, not } from "drizzle-orm"
 
 import { getErrorMessage } from "@/lib/handle-error"
-
+import { createClient } from "@/lib/supabase/server"
 import { slugify } from "@/lib/utils"
 import {
   updateStoreSchema,
@@ -101,17 +100,20 @@ export async function updateStore(storeId: string, fd: FormData) {
 
 export async function deleteStore(storeId: string) {
   const supabase = createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
   const userId = user?.id
 
   if (!userId) {
     throw new Error("Unauthorized")
   }
 
-  await db.delete(stores).where(and(eq(stores.id, storeId), eq(stores.userId, userId)))
+  await db
+    .delete(stores)
+    .where(and(eq(stores.id, storeId), eq(stores.userId, userId)))
 
   revalidateTag(`stores-${userId}`)
 
   redirect("/admin")
 }
-

@@ -7,6 +7,7 @@ import { env } from "@/env.js"
 import type { SearchParams } from "@/types"
 import { and, asc, desc, eq, gte, inArray, lte, sql } from "drizzle-orm"
 
+import { getStoreId } from "@/lib/store"
 import { customerSearchParamsSchema } from "@/lib/validations/params"
 import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton"
 import { DateRangePicker } from "@/components/date-range-picker"
@@ -17,8 +18,6 @@ export const metadata: Metadata = {
   title: "Customer's Orders",
   description: "View the customer's order details",
 }
-
-import { getStoreId } from "@/lib/store"
 
 interface CustomerPageProps {
   params: {

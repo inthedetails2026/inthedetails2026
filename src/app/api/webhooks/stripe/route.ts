@@ -1,15 +1,14 @@
 import { revalidateTag } from "next/cache"
-import { getStore, getStoreId } from "@/lib/store"
 import { headers } from "next/headers"
 import { db } from "@/db"
 import { addresses, carts, orders, payments, products } from "@/db/schema"
 import { env } from "@/env.js"
 import { eq, or } from "drizzle-orm"
-
 import type Stripe from "stripe"
 import { z } from "zod"
-import { generateId } from "@/lib/id"
 
+import { generateId } from "@/lib/id"
+import { getStore, getStoreId } from "@/lib/store"
 import { stripe } from "@/lib/stripe"
 import {
   checkoutItemSchema,
@@ -45,7 +44,7 @@ export async function POST(req: Request) {
         checkoutSessionCompleted?.metadata?.userId &&
         !checkoutSessionCompleted?.metadata?.cartId
       ) {
-         // Subscription logic removed for Supabase migration
+        // Subscription logic removed for Supabase migration
       }
       break
     case "invoice.payment_succeeded":
@@ -56,7 +55,7 @@ export async function POST(req: Request) {
         invoicePaymentSucceeded?.metadata?.userId &&
         !invoicePaymentSucceeded?.metadata?.cartId
       ) {
-         // Subscription logic removed for Supabase migration
+        // Subscription logic removed for Supabase migration
       }
       // revalidateTag(`${invoicePaymentSucceeded?.metadata?.userId}-subscription`)
       break
@@ -101,7 +100,8 @@ export async function POST(req: Request) {
           const processingFeeFixed = store.processingFeeFixed / 100
           const totalAmount = Number(orderAmount) / 100
 
-          const stripeFee = totalAmount * processingFeePercent + processingFeeFixed
+          const stripeFee =
+            totalAmount * processingFeePercent + processingFeeFixed
           const netAmount = totalAmount - stripeFee
 
           // Create new address in DB
@@ -125,27 +125,30 @@ export async function POST(req: Request) {
 
           // Create new order in db with explicit ID and precision
           console.log("🔥 WEBHOOK: Attempting direct order insert...")
-          const newOrder = await db.insert(orders).values({
-            id: generateId("order"),
-            storeId,
-            items: safeParsedItems.data,
-            quantity: safeParsedItems.data.reduce(
-              (acc, item) => acc + item.quantity,
-              0
-            ),
-            amount: totalAmount.toFixed(2),
-            stripeFee: stripeFee.toFixed(2),
-            netAmount: netAmount.toFixed(2),
-            stripePaymentIntentId: paymentIntentId,
-            stripePaymentIntentStatus: paymentIntentSucceeded?.status,
-            name: paymentIntentSucceeded?.shipping?.name ?? "Customer",
-            email: paymentIntentSucceeded?.receipt_email ?? "",
-            addressId: newAddress[0]?.insertedId,
-          }).returning({ insertedId: orders.id })
+          const newOrder = await db
+            .insert(orders)
+            .values({
+              id: generateId("order"),
+              storeId,
+              items: safeParsedItems.data,
+              quantity: safeParsedItems.data.reduce(
+                (acc, item) => acc + item.quantity,
+                0
+              ),
+              amount: totalAmount.toFixed(2),
+              stripeFee: stripeFee.toFixed(2),
+              netAmount: netAmount.toFixed(2),
+              stripePaymentIntentId: paymentIntentId,
+              stripePaymentIntentStatus: paymentIntentSucceeded?.status,
+              name: paymentIntentSucceeded?.shipping?.name ?? "Customer",
+              email: paymentIntentSucceeded?.receipt_email ?? "",
+              addressId: newAddress[0]?.insertedId,
+            })
+            .returning({ insertedId: orders.id })
 
-          console.log("DEBUG: SUCCESS! Webhook created order in DB:", { 
-            id: newOrder[0]?.insertedId, 
-            intent: paymentIntentId 
+          console.log("DEBUG: SUCCESS! Webhook created order in DB:", {
+            id: newOrder[0]?.insertedId,
+            intent: paymentIntentId,
           })
 
           // Update product inventory in db

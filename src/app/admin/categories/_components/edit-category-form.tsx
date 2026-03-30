@@ -2,14 +2,15 @@
 
 import * as React from "react"
 import { useRouter } from "next/navigation"
-import { X } from "lucide-react"
+import { type Category } from "@/db/schema"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { X } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import * as z from "zod"
 
 import { updateCategory } from "@/lib/actions/category"
-import { FileUploader } from "@/components/file-uploader"
+import { useUploadFile } from "@/hooks/use-upload-file"
 import { Button } from "@/components/ui/button"
 import {
   Form,
@@ -21,9 +22,8 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
+import { FileUploader } from "@/components/file-uploader"
 import { Icons } from "@/components/icons"
-import { useUploadFile } from "@/hooks/use-upload-file"
-import { type Category } from "@/db/schema"
 
 const schema = z.object({
   name: z.string().min(1),
@@ -40,16 +40,26 @@ interface EditCategoryFormProps {
 export function EditCategoryForm({ category }: EditCategoryFormProps) {
   const router = useRouter()
   const [isPending, startTransition] = React.useTransition()
-  
-  const { uploadFiles, progresses, uploadedFiles, setUploadedFiles, isUploading } = useUploadFile("productImage", { 
-    defaultUploadedFiles: category.image ? [{
-      id: "current",
-      name: "current-thumbnail",
-      url: category.image,
-      key: "current",
-      size: 0,
-      type: "image/png"
-    } as any] : [] 
+
+  const {
+    uploadFiles,
+    progresses,
+    uploadedFiles,
+    setUploadedFiles,
+    isUploading,
+  } = useUploadFile("productImage", {
+    defaultUploadedFiles: category.image
+      ? [
+          {
+            id: "current",
+            name: "current-thumbnail",
+            url: category.image,
+            key: "current",
+            size: 0,
+            type: "image/png",
+          } as any,
+        ]
+      : [],
   })
 
   const form = useForm<Inputs>({
@@ -64,10 +74,13 @@ export function EditCategoryForm({ category }: EditCategoryFormProps) {
   function onSubmit(data: Inputs) {
     startTransition(async () => {
       try {
-        // Use the most recent image if multiple were somehow uploaded, 
+        // Use the most recent image if multiple were somehow uploaded,
         // prioritizing newly uploaded ones over the "current" placeholder
-        const imageUrl = uploadedFiles.length > 0 ? uploadedFiles[uploadedFiles.length - 1].url : null;
-        
+        const imageUrl =
+          uploadedFiles.length > 0
+            ? uploadedFiles[uploadedFiles.length - 1].url
+            : null
+
         const { error } = await updateCategory({
           id: category.id,
           name: data.name,
@@ -140,24 +153,35 @@ export function EditCategoryForm({ category }: EditCategoryFormProps) {
           <FormMessage />
         </FormItem>
         {uploadedFiles.length > 0 && (
-          <div className="flex flex-wrap gap-4 mt-4">
+          <div className="mt-4 flex flex-wrap gap-4">
             {uploadedFiles.map((file, idx) => (
-              <div key={file.id} className="relative h-24 w-24 rounded-md overflow-hidden border group">
+              <div
+                key={file.id}
+                className="group relative h-24 w-24 overflow-hidden rounded-md border"
+              >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={file.url} alt={file.name} className="h-full w-full object-cover" />
-                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                <img
+                  src={file.url}
+                  alt={file.name}
+                  className="h-full w-full object-cover"
+                />
+                <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity group-hover:opacity-100">
                   <Button
                     type="button"
                     variant="destructive"
                     size="icon"
                     className="h-7 w-7"
-                    onClick={() => setUploadedFiles(uploadedFiles.filter((_, i) => i !== idx))}
+                    onClick={() =>
+                      setUploadedFiles(
+                        uploadedFiles.filter((_, i) => i !== idx)
+                      )
+                    }
                   >
                     <X className="h-4 w-4" />
                   </Button>
                 </div>
                 {file.id === "current" && (
-                  <span className="absolute bottom-0 left-0 right-0 bg-black/60 text-white text-[10px] text-center py-0.5">
+                  <span className="absolute bottom-0 left-0 right-0 bg-black/60 py-0.5 text-center text-[10px] text-white">
                     Current
                   </span>
                 )}

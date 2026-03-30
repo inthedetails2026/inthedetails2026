@@ -1,3 +1,4 @@
+import * as React from "react"
 import {
   Body,
   Container,
@@ -11,7 +12,6 @@ import {
   Tailwind,
   Text,
 } from "@react-email/components"
-import * as React from "react"
 
 interface AdminOrderNotificationEmailProps {
   orderId: string
@@ -60,11 +60,13 @@ export default function AdminOrderNotificationEmail({
                 New Order Received! 🚀
               </Heading>
               <Text className="text-zinc-500">Order ID: {orderId}</Text>
-              <Text className="text-zinc-500 font-mono text-xs italic opacity-80">Placed at: {time}</Text>
+              <Text className="font-mono text-xs italic text-zinc-500 opacity-80">
+                Placed at: {time}
+              </Text>
             </Section>
-            
+
             <Hr className="my-8 border-zinc-200" />
-            
+
             <Section>
               <Heading className="text-lg font-semibold">
                 Customer Information
@@ -72,39 +74,52 @@ export default function AdminOrderNotificationEmail({
               <Text className="mt-2 text-sm leading-6">
                 **Name:** {customerName} <br />
                 **Email:** {customerEmail} <br />
-                **Phone:** {deliveryAddress.phone && deliveryAddress.phone.length > 0 ? deliveryAddress.phone : "N/A"}
+                **Phone:**{" "}
+                {deliveryAddress.phone && deliveryAddress.phone.length > 0
+                  ? deliveryAddress.phone
+                  : "N/A"}
               </Text>
             </Section>
 
             <Section className="mt-6">
-              <Heading className="text-lg font-semibold border-b border-zinc-200 pb-2">
+              <Heading className="border-b border-zinc-200 pb-2 text-lg font-semibold">
                 Delivery Address
               </Heading>
               <Text className="mt-2 text-sm leading-6">
                 {deliveryAddress.line1} <br />
-                {deliveryAddress.line2 && <>{deliveryAddress.line2} <br /></>}
-                {deliveryAddress.city}, {deliveryAddress.state} {deliveryAddress.postalCode} <br />
+                {deliveryAddress.line2 && (
+                  <>
+                    {deliveryAddress.line2} <br />
+                  </>
+                )}
+                {deliveryAddress.city}, {deliveryAddress.state}{" "}
+                {deliveryAddress.postalCode} <br />
                 {deliveryAddress.country}
               </Text>
             </Section>
 
             <Section className="mt-8">
-              <Heading className="text-lg font-semibold border-b border-zinc-200 pb-2">
+              <Heading className="border-b border-zinc-200 pb-2 text-lg font-semibold">
                 Order Items
               </Heading>
               {items.map((item, index) => (
-                <div key={index} className="flex justify-between py-4 border-b border-zinc-100 last:border-0 text-sm">
+                <div
+                  key={index}
+                  className="flex justify-between border-b border-zinc-100 py-4 text-sm last:border-0"
+                >
                   <div className="flex-1">
                     <Text className="m-0 font-medium">{item.name}</Text>
-                    <Text className="m-0 text-zinc-500">Quantity: {item.quantity}</Text>
+                    <Text className="m-0 text-zinc-500">
+                      Quantity: {item.quantity}
+                    </Text>
                   </div>
                   <div className="text-right">
                     <Text className="m-0 font-medium">${item.price}</Text>
                   </div>
                 </div>
               ))}
-              
-              <div className="mt-4 flex justify-between font-bold text-lg">
+
+              <div className="mt-4 flex justify-between text-lg font-bold">
                 <Text className="m-0">Total</Text>
                 <Text className="m-0">${totalAmount}</Text>
               </div>

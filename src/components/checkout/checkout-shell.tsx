@@ -12,8 +12,9 @@ import { cn } from "@/lib/utils"
  * @see https://stripe.com/docs/payments/quickstart
  */
 
-interface CheckoutShellProps
-  extends React.PropsWithChildren<React.HTMLAttributes<HTMLDivElement>> {
+interface CheckoutShellProps extends React.PropsWithChildren<
+  React.HTMLAttributes<HTMLDivElement>
+> {
   storeStripeAccountId?: string | null
   paymentIntentPromise: Promise<{
     data: {
@@ -42,12 +43,19 @@ export function CheckoutShell({
 
   if (!data?.clientSecret || error) {
     return (
-      <section className={cn("flex size-full flex-col items-center justify-center space-y-4 bg-white p-6 text-center", className)} {...props}>
+      <section
+        className={cn(
+          "flex size-full flex-col items-center justify-center space-y-4 bg-white p-6 text-center",
+          className
+        )}
+        {...props}
+      >
         <div className="flex flex-col items-center gap-2">
-           <div className="text-xl font-bold text-red-600">Checkout Error</div>
-           <p className="text-muted-foreground max-w-sm">
-             {error ?? "No payment session found. Please try refreshing your cart or adding items."}
-           </p>
+          <div className="text-xl font-bold text-red-600">Checkout Error</div>
+          <p className="max-w-sm text-muted-foreground">
+            {error ??
+              "No payment session found. Please try refreshing your cart or adding items."}
+          </p>
         </div>
       </section>
     )

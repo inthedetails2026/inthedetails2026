@@ -2,9 +2,9 @@
 
 import * as React from "react"
 import { useRouter } from "next/navigation"
-import { X } from "lucide-react"
 import { type Product } from "@/db/schema"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { X } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 
@@ -20,7 +20,6 @@ import {
 } from "@/lib/validations/product"
 import { useUploadFile } from "@/hooks/use-upload-file"
 import { Button } from "@/components/ui/button"
-
 import {
   Form,
   FormControl,
@@ -60,12 +59,25 @@ export function UpdateProductForm({
   const router = useRouter()
   const [isUpdating, setIsUpdating] = React.useState(false)
   const [isDeleting, setIsDeleting] = React.useState(false)
-  const { uploadFiles: uploadThumbnail, progresses: thumbnailProgresses, uploadedFiles: thumbnail, setUploadedFiles: setThumbnail, isUploading: isUploadingThumbnail } = useUploadFile("productImage", {
+  const {
+    uploadFiles: uploadThumbnail,
+    progresses: thumbnailProgresses,
+    uploadedFiles: thumbnail,
+    setUploadedFiles: setThumbnail,
+    isUploading: isUploadingThumbnail,
+  } = useUploadFile("productImage", {
     defaultUploadedFiles: product.images?.length ? [product.images[0]] : [],
   })
 
-  const { uploadFiles: uploadImages, progresses: imagesProgresses, uploadedFiles: images, setUploadedFiles: setImages, isUploading: isUploadingImages } = useUploadFile("productImage", {
-    defaultUploadedFiles: (product.images?.length ?? 0) > 1 ? product.images!.slice(1) : [],
+  const {
+    uploadFiles: uploadImages,
+    progresses: imagesProgresses,
+    uploadedFiles: images,
+    setUploadedFiles: setImages,
+    isUploading: isUploadingImages,
+  } = useUploadFile("productImage", {
+    defaultUploadedFiles:
+      (product.images?.length ?? 0) > 1 ? product.images!.slice(1) : [],
   })
 
   const form = useForm<UpdateProductSchema>({
@@ -85,7 +97,10 @@ export function UpdateProductForm({
     setIsUpdating(true)
 
     const { images: _images, ...rest } = input
-    const passedSubcategoryId = !rest.subcategoryId || rest.subcategoryId === "empty-subcategory" ? null : rest.subcategoryId;
+    const passedSubcategoryId =
+      !rest.subcategoryId || rest.subcategoryId === "empty-subcategory"
+        ? null
+        : rest.subcategoryId
 
     toast.promise(
       updateProduct({
@@ -251,7 +266,6 @@ export function UpdateProductForm({
             // We use a custom render for the double dropzone
             render={({ field }) => (
               <div className="space-y-6">
-                
                 {/* THUMBNAIL SECTION */}
                 <div className="space-y-4">
                   <FormItem className="w-full">
@@ -276,17 +290,24 @@ export function UpdateProductForm({
                     <div className="space-y-2">
                       <div className="flex flex-wrap gap-3">
                         {thumbnail.map((file, idx) => (
-                          <div key={file.id} className="relative h-24 w-24 rounded-md overflow-hidden border group">
+                          <div
+                            key={file.id}
+                            className="group relative h-24 w-24 overflow-hidden rounded-md border"
+                          >
                             {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img src={file.url} alt={file.name} className="h-full w-full object-cover" />
-                            <span className="absolute bottom-0 left-0 right-0 bg-black/60 text-white text-[10px] text-center py-0.5 pointer-events-none">
+                            <img
+                              src={file.url}
+                              alt={file.name}
+                              className="h-full w-full object-cover"
+                            />
+                            <span className="pointer-events-none absolute bottom-0 left-0 right-0 bg-black/60 py-0.5 text-center text-[10px] text-white">
                               Thumbnail
                             </span>
                             <Button
                               type="button"
                               variant="destructive"
                               size="icon"
-                              className="absolute top-1 right-1 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                              className="absolute right-1 top-1 h-6 w-6 opacity-0 transition-opacity group-hover:opacity-100"
                               onClick={() => setThumbnail([])}
                             >
                               <X className="h-4 w-4" />
@@ -298,14 +319,15 @@ export function UpdateProductForm({
                   )}
                 </div>
 
-                <div className="w-full h-px bg-border" />
+                <div className="h-px w-full bg-border" />
 
                 {/* ADDITIONAL IMAGES SECTION */}
                 <div className="space-y-4">
                   <FormItem className="w-full">
                     <FormLabel>Additional Gallery Images</FormLabel>
                     <p className="text-xs text-muted-foreground">
-                      Up to 3 extra photos to show the product from different angles.
+                      Up to 3 extra photos to show the product from different
+                      angles.
                     </p>
                     <FormControl>
                       <FileUploader
@@ -324,15 +346,26 @@ export function UpdateProductForm({
                     <div className="space-y-2">
                       <div className="flex flex-wrap gap-3">
                         {images.map((file) => (
-                          <div key={file.id} className="relative h-24 w-24 rounded-md overflow-hidden border group">
+                          <div
+                            key={file.id}
+                            className="group relative h-24 w-24 overflow-hidden rounded-md border"
+                          >
                             {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img src={file.url} alt={file.name} className="h-full w-full object-cover" />
+                            <img
+                              src={file.url}
+                              alt={file.name}
+                              className="h-full w-full object-cover"
+                            />
                             <Button
                               type="button"
                               variant="destructive"
                               size="icon"
-                              className="absolute top-1 right-1 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
-                              onClick={() => setImages(images.filter((img) => img.id !== file.id))}
+                              className="absolute right-1 top-1 h-6 w-6 opacity-0 transition-opacity group-hover:opacity-100"
+                              onClick={() =>
+                                setImages(
+                                  images.filter((img) => img.id !== file.id)
+                                )
+                              }
                             >
                               <X className="h-4 w-4" />
                             </Button>
@@ -347,7 +380,14 @@ export function UpdateProductForm({
           />
         </div>
         <div className="flex space-x-2">
-          <Button disabled={isDeleting || isUpdating || isUploadingThumbnail || isUploadingImages}>
+          <Button
+            disabled={
+              isDeleting ||
+              isUpdating ||
+              isUploadingThumbnail ||
+              isUploadingImages
+            }
+          >
             {(isUpdating || isUploadingThumbnail || isUploadingImages) && (
               <Icons.spinner
                 className="mr-2 size-4 animate-spin"

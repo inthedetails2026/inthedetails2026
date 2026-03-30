@@ -1,7 +1,11 @@
 import type { Metadata } from "next"
 import { env } from "@/env.js"
 
-import { getProducts, getCategoryBySlug, getSubcategoriesByCategory } from "@/lib/queries/product"
+import {
+  getCategoryBySlug,
+  getProducts,
+  getSubcategoriesByCategory,
+} from "@/lib/queries/product"
 import { getStores } from "@/lib/queries/store"
 import { slugify, toTitleCase, unslugify } from "@/lib/utils"
 import { productsSearchParamsSchema } from "@/lib/validations/params"
@@ -38,7 +42,7 @@ export default async function SubcategoryPage({
   searchParams,
 }: SubcategoryPageProps) {
   const { category, subcategory } = params
-  
+
   const categorySlug = slugify(category)
   const subcategorySlug = slugify(subcategory)
 

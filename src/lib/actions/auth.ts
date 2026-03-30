@@ -1,12 +1,16 @@
 "use server"
 
+import { revalidatePath } from "next/cache"
 import { db } from "@/db"
 import { addresses, profiles } from "@/db/schema"
 import { type z } from "zod"
-import { signUpSchema } from "@/lib/validations/auth"
-import { revalidatePath } from "next/cache"
 
-export async function saveUserAddress(input: z.infer<typeof signUpSchema>, userId: string) {
+import { signUpSchema } from "@/lib/validations/auth"
+
+export async function saveUserAddress(
+  input: z.infer<typeof signUpSchema>,
+  userId: string
+) {
   try {
     // Create address record
     await db.insert(addresses).values({

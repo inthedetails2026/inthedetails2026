@@ -56,7 +56,8 @@ export async function CheckoutCard({ storeId }: CheckoutCardProps) {
       <CardFooter className="flex flex-col items-stretch space-y-2">
         <div className="flex w-full items-center">
           <span className="flex-1">
-            Subtotal ({cartLineItems.reduce((acc, item) => acc + item.quantity, 0)})
+            Subtotal (
+            {cartLineItems.reduce((acc, item) => acc + item.quantity, 0)})
           </span>
           <span>
             {formatPrice(
@@ -76,14 +77,15 @@ export async function CheckoutCard({ storeId }: CheckoutCardProps) {
           </span>
         </div>
         <Separator className="my-2" />
-        <div className="flex w-full items-center font-bold text-lg">
+        <div className="flex w-full items-center text-lg font-bold">
           <span className="flex-1">Total</span>
           <span>
             {formatPrice(
               cartLineItems.reduce(
                 (acc, item) => acc + Number(item.price) * item.quantity,
                 0
-              ) + ((cartLineItems[0]?.deliveryFee ?? 0) / 100)
+              ) +
+                (cartLineItems[0]?.deliveryFee ?? 0) / 100
             )}
           </span>
         </div>

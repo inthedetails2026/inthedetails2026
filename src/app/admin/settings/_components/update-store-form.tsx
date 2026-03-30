@@ -2,13 +2,16 @@
 
 import * as React from "react"
 import { useRouter } from "next/navigation"
+import { type Store } from "@/db/schema"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 
 import { updateStore } from "@/lib/actions/store"
-import { type Store } from "@/db/schema"
-import { updateStoreSchema, type UpdateStoreSchema } from "@/lib/validations/store"
+import {
+  updateStoreSchema,
+  type UpdateStoreSchema,
+} from "@/lib/validations/store"
 import { Button } from "@/components/ui/button"
 import {
   Form,

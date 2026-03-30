@@ -5,10 +5,9 @@ import { eq } from "drizzle-orm"
 import { z } from "zod"
 
 import { resend } from "@/lib/resend"
+import { createClient } from "@/lib/supabase/server"
 import { joinNewsletterSchema } from "@/lib/validations/notification"
 import NewsletterWelcomeEmail from "@/components/emails/newsletter-welcome-email"
-import { createClient } from "@/lib/supabase/server"
-
 
 export async function POST(req: Request) {
   const input = joinNewsletterSchema.parse(await req.json())
@@ -33,8 +32,9 @@ export async function POST(req: Request) {
     }
 
     const supabase = createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
 
     await Promise.all([
       resend.emails.send({

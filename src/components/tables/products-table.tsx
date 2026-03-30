@@ -159,11 +159,7 @@ export function ProductsTable({
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-[160px]">
               <DropdownMenuItem asChild>
-                <Link
-                  href={`/admin/products/${row.original.id}`}
-                >
-                  Edit
-                </Link>
+                <Link href={`/admin/products/${row.original.id}`}>Edit</Link>
               </DropdownMenuItem>
 
               <DropdownMenuItem asChild>

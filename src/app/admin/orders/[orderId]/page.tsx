@@ -7,6 +7,7 @@ import { env } from "@/env.js"
 import { and, eq } from "drizzle-orm"
 
 import { getOrderLineItems } from "@/lib/actions/order"
+import { getStoreId } from "@/lib/store"
 import { formatId, formatPrice } from "@/lib/utils"
 import {
   Card,
@@ -22,8 +23,6 @@ export const metadata: Metadata = {
   description: "View your order details",
 }
 
-import { getStoreId } from "@/lib/store"
-
 interface OrderPageProps {
   params: {
     orderId: string
@@ -37,7 +36,6 @@ export default async function OrderPage({ params }: OrderPageProps) {
   const order = await db.query.orders.findFirst({
     where: and(eq(orders.id, orderId), eq(orders.storeId, storeId)),
   })
-
 
   if (!order) {
     notFound()

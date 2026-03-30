@@ -35,11 +35,7 @@ export async function getFeaturedProducts() {
         .leftJoin(stores, eq(products.storeId, stores.id))
         .leftJoin(categories, eq(products.categoryId, categories.id))
         .groupBy(products.id, categories.name)
-        .orderBy(
-
-          desc(count(products.images)),
-          desc(products.createdAt)
-        )
+        .orderBy(desc(count(products.images)), desc(products.createdAt))
     },
     ["featured-products"],
     {
@@ -63,14 +59,34 @@ export async function getProducts(input: SearchParams) {
       keyof Product | undefined,
       "asc" | "desc" | undefined,
     ]) ?? ["createdAt", "desc"]
-    const [minPrice, maxPrice] = (Array.isArray(search.price_range) ? search.price_range[0] : search.price_range)?.split("-") ?? []
-    const categoriesParam = (Array.isArray(search.categories) ? search.categories[0] : search.categories)?.split(".") ?? []
-    const subcategoriesParam = (Array.isArray(search.subcategories) ? search.subcategories[0] : search.subcategories)?.split(".") ?? []
-    const storeIds = (Array.isArray(search.store_ids) ? search.store_ids[0] : search.store_ids)?.split(".") ?? []
-    const activeParam = Array.isArray(search.active) ? search.active[0] : search.active
+    const [minPrice, maxPrice] =
+      (Array.isArray(search.price_range)
+        ? search.price_range[0]
+        : search.price_range
+      )?.split("-") ?? []
+    const categoriesParam =
+      (Array.isArray(search.categories)
+        ? search.categories[0]
+        : search.categories
+      )?.split(".") ?? []
+    const subcategoriesParam =
+      (Array.isArray(search.subcategories)
+        ? search.subcategories[0]
+        : search.subcategories
+      )?.split(".") ?? []
+    const storeIds =
+      (Array.isArray(search.store_ids)
+        ? search.store_ids[0]
+        : search.store_ids
+      )?.split(".") ?? []
+    const activeParam = Array.isArray(search.active)
+      ? search.active[0]
+      : search.active
     const active = activeParam === "true"
 
-    const navbarSubcategorySlug = Array.isArray(search.subcategory) ? search.subcategory[0] : search.subcategory
+    const navbarSubcategorySlug = Array.isArray(search.subcategory)
+      ? search.subcategory[0]
+      : search.subcategory
 
     const [data, total] = await Promise.all([
       db

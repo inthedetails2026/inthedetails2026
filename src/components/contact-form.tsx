@@ -6,7 +6,10 @@ import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 
 import { sendContactEmail } from "@/lib/actions/email"
-import { contactEmailSchema, type ContactEmailSchema } from "@/lib/validations/email"
+import {
+  contactEmailSchema,
+  type ContactEmailSchema,
+} from "@/lib/validations/email"
 import { Button } from "@/components/ui/button"
 import {
   Form,
@@ -51,7 +54,7 @@ export function ContactForm() {
   return (
     <Form {...form}>
       <form
-        className="grid w-full gap-5 h-fit p-6 rounded-xl border bg-muted/30 backdrop-blur-sm shadow-sm"
+        className="grid h-fit w-full gap-5 rounded-xl border bg-muted/30 p-6 shadow-sm backdrop-blur-sm"
         onSubmit={form.handleSubmit(onSubmit)}
       >
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
@@ -114,7 +117,10 @@ export function ContactForm() {
         />
         <Button className="w-full sm:w-fit" disabled={isPending}>
           {isPending && (
-            <Icons.spinner className="mr-2 size-4 animate-spin" aria-hidden="true" />
+            <Icons.spinner
+              className="mr-2 size-4 animate-spin"
+              aria-hidden="true"
+            />
           )}
           Send Message
           <span className="sr-only">Send message</span>

@@ -1,6 +1,5 @@
 "use server"
 
-import { env } from "@/env.js"
 import { unstable_noStore as noStore } from "next/cache"
 import { cookies } from "next/headers"
 import { db } from "@/db"
@@ -14,6 +13,7 @@ import {
   subcategories,
   type Order,
 } from "@/db/schema"
+import { env } from "@/env.js"
 import type { SearchParams } from "@/types"
 import {
   and,
@@ -31,13 +31,13 @@ import {
 import type Stripe from "stripe"
 import { z } from "zod"
 
+import { generateId } from "@/lib/id"
+import { getStore, getStoreId } from "@/lib/store"
 import {
   checkoutItemSchema,
   type CartLineItemSchema,
   type CheckoutItemSchema,
 } from "@/lib/validations/cart"
-import { generateId } from "@/lib/id"
-import { getStoreId, getStore } from "@/lib/store"
 import type { getOrderLineItemsSchema } from "@/lib/validations/order"
 import { ordersSearchParamsSchema } from "@/lib/validations/params"
 
@@ -152,9 +152,9 @@ export async function getStoreOrders(input: {
             // Filter by createdAt
             fromDay && toDay
               ? and(
-                gte(orders.createdAt, fromDay),
-                lte(orders.createdAt, toDay)
-              )
+                  gte(orders.createdAt, fromDay),
+                  lte(orders.createdAt, toDay)
+                )
               : undefined
           )
         )
@@ -183,9 +183,9 @@ export async function getStoreOrders(input: {
             // Filter by createdAt
             fromDay && toDay
               ? and(
-                gte(orders.createdAt, fromDay),
-                lte(orders.createdAt, toDay)
-              )
+                  gte(orders.createdAt, fromDay),
+                  lte(orders.createdAt, toDay)
+                )
               : undefined
           )
         )
@@ -335,9 +335,9 @@ export async function getCustomers(input: {
             eq(orders.storeId, storeId),
             fromDay && toDay
               ? and(
-                gte(orders.createdAt, fromDay),
-                lte(orders.createdAt, toDay)
-              )
+                  gte(orders.createdAt, fromDay),
+                  lte(orders.createdAt, toDay)
+                )
               : undefined
           )
         )
@@ -354,9 +354,9 @@ export async function getCustomers(input: {
             eq(orders.storeId, storeId),
             fromDay && toDay
               ? and(
-                gte(orders.createdAt, fromDay),
-                lte(orders.createdAt, toDay)
-              )
+                  gte(orders.createdAt, fromDay),
+                  lte(orders.createdAt, toDay)
+                )
               : undefined
           )
         )

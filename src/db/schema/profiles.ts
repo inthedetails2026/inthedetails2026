@@ -1,5 +1,7 @@
 import { pgTable, text, varchar } from "drizzle-orm/pg-core"
+
 import { generateId } from "@/lib/id"
+
 import { lifecycleDates } from "./utils"
 
 export const profiles = pgTable("profiles", {

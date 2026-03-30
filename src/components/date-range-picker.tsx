@@ -15,8 +15,9 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 
-interface DateRangePickerProps
-  extends React.ComponentPropsWithoutRef<typeof PopoverContent> {
+interface DateRangePickerProps extends React.ComponentPropsWithoutRef<
+  typeof PopoverContent
+> {
   /**
    * The selected date range.
    * @default undefined

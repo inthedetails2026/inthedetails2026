@@ -1,5 +1,5 @@
-import { createServerClient } from '@supabase/ssr'
-import { NextResponse, type NextRequest } from 'next/server'
+import { NextResponse, type NextRequest } from "next/server"
+import { createServerClient } from "@supabase/ssr"
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
@@ -15,7 +15,9 @@ export async function updateSession(request: NextRequest) {
           return request.cookies.getAll()
         },
         setAll(cookiesToSet: any) {
-          cookiesToSet.forEach(({ name, value }: any) => request.cookies.set(name, value))
+          cookiesToSet.forEach(({ name, value }: any) =>
+            request.cookies.set(name, value)
+          )
           supabaseResponse = NextResponse.next({
             request,
           })
@@ -35,22 +37,37 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
-  const publicPaths = ['/', '/signin', '/signup', '/auth', '/products', '/collections', '/product']
-  const isPublicPath = publicPaths.some(path => request.nextUrl.pathname === path || request.nextUrl.pathname.startsWith(`${path}/`))
+  const publicPaths = [
+    "/",
+    "/signin",
+    "/signup",
+    "/auth",
+    "/products",
+    "/collections",
+    "/product",
+  ]
+  const isPublicPath = publicPaths.some(
+    (path) =>
+      request.nextUrl.pathname === path ||
+      request.nextUrl.pathname.startsWith(`${path}/`)
+  )
 
   if (!user && !isPublicPath) {
     // no user, potentially respond by redirecting the user to the login page
     const url = request.nextUrl.clone()
-    url.pathname = '/signin'
+    url.pathname = "/signin"
     return NextResponse.redirect(url)
   }
 
   // Protect Admin Route specifically
-  if (user && request.nextUrl.pathname.startsWith('/admin')) {
-    const userEmail = user.email || user.user_metadata?.email || user.identities?.[0]?.identity_data?.email;
+  if (user && request.nextUrl.pathname.startsWith("/admin")) {
+    const userEmail =
+      user.email ||
+      user.user_metadata?.email ||
+      user.identities?.[0]?.identity_data?.email
     if (userEmail !== "inthedetails2026@gmail.com") {
       const url = request.nextUrl.clone()
-      url.pathname = '/'
+      url.pathname = "/"
       return NextResponse.redirect(url)
     }
   }

@@ -1,5 +1,5 @@
-import { notFound } from "next/navigation"
 import { unstable_noStore as noStore } from "next/cache"
+import { notFound } from "next/navigation"
 import { db } from "@/db"
 import { categories } from "@/db/schema"
 import { eq } from "drizzle-orm"

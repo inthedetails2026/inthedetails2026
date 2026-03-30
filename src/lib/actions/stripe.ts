@@ -1,6 +1,5 @@
 "use server"
 
-import { env } from "@/env.js"
 import {
   unstable_cache as cache,
   unstable_noStore as noStore,
@@ -8,9 +7,8 @@ import {
 import { cookies } from "next/headers"
 import { db } from "@/db"
 import { carts, payments, products, stores } from "@/db/schema"
+import { env } from "@/env.js"
 import type { PlanWithPrice, UserPlan } from "@/types"
-import { createClient } from "@/lib/supabase/server"
-
 import { addDays } from "date-fns"
 import { and, asc, desc, eq, gte, inArray, like, lte, sql } from "drizzle-orm"
 import type Stripe from "stripe"
@@ -20,6 +18,7 @@ import { pricingConfig } from "@/config/pricing"
 import { calculateOrderAmount } from "@/lib/checkout"
 import { getErrorMessage } from "@/lib/handle-error"
 import { stripe } from "@/lib/stripe"
+import { createClient } from "@/lib/supabase/server"
 import { absoluteUrl, formatPrice, getUserEmail } from "@/lib/utils"
 import { userPrivateMetadataSchema } from "@/lib/validations/auth"
 import { type CheckoutItemSchema } from "@/lib/validations/cart"
@@ -86,10 +85,16 @@ export async function createPaymentIntent(
     })
 
     const { total } = calculateOrderAmount(input.items, store?.deliveryFee ?? 0)
-    console.log("Creating Payment Intent:", { total, itemsCount: checkoutItems.length, deliveryFee: store?.deliveryFee })
+    console.log("Creating Payment Intent:", {
+      total,
+      itemsCount: checkoutItems.length,
+      deliveryFee: store?.deliveryFee,
+    })
 
     if (total <= 0) {
-      throw new Error("Cannot create payment intent for 0 amount. Please ensure your cart has items.")
+      throw new Error(
+        "Cannot create payment intent for 0 amount. Please ensure your cart has items."
+      )
     }
 
     const metadata: Stripe.MetadataParam = {
@@ -99,16 +104,14 @@ export async function createPaymentIntent(
     }
 
     // Create a payment intent
-    const paymentIntent = await stripe.paymentIntents.create(
-      {
-        amount: total,
-        currency: "usd",
-        metadata,
-        automatic_payment_methods: {
-          enabled: true,
-        },
-      }
-    )
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: total,
+      currency: "usd",
+      metadata,
+      automatic_payment_methods: {
+        enabled: true,
+      },
+    })
 
     // Update the cart with the payment intent id and client secret
     await db
@@ -146,54 +149,60 @@ export async function createCheckoutSession(input: {
       where: inArray(products.id, productIds),
     })
 
-    const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] = input.items.map((item) => {
-      const product = dbProducts.find((p) => p.id === item.productId)
-      if (!product) {
-        throw new Error(`Product ${item.productId} not found.`)
-      }
+    const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] =
+      input.items.map((item) => {
+        const product = dbProducts.find((p) => p.id === item.productId)
+        if (!product) {
+          throw new Error(`Product ${item.productId} not found.`)
+        }
 
-      return {
-        price_data: {
-          currency: "usd",
-          product_data: {
-            name: product.name,
-            description: product.description ?? undefined,
-            images: product.images && product.images.length > 0 ? [product.images[0].url] : [],
+        return {
+          price_data: {
+            currency: "usd",
+            product_data: {
+              name: product.name,
+              description: product.description ?? undefined,
+              images:
+                product.images && product.images.length > 0
+                  ? [product.images[0].url]
+                  : [],
+            },
+            unit_amount: Math.round(Number(product.price) * 100), // Convert to cents
           },
-          unit_amount: Math.round(Number(product.price) * 100), // Convert to cents
-        },
-        quantity: item.quantity,
-      }
+          quantity: item.quantity,
+        }
+      })
+
+    const session = await stripe.checkout.sessions.create({
+      line_items,
+      mode: "payment",
+      success_url: absoluteUrl(
+        `/checkout/${input.storeId}/success?session_id={CHECKOUT_SESSION_ID}`
+      ),
+      cancel_url: absoluteUrl(`/checkout/${input.storeId}`),
+      billing_address_collection: "auto",
+      shipping_address_collection: {
+        allowed_countries: ["US", "CA", "GB", "AU"], // Adjust your target shipping regions
+      },
+      metadata: {
+        storeId: input.storeId,
+        // Store a stringified version of custom identifiers
+        items: JSON.stringify(
+          input.items.map((i) => ({ id: i.productId, qty: i.quantity }))
+        ),
+      },
     })
 
-    const session = await stripe.checkout.sessions.create(
-      {
-        line_items,
-        mode: "payment",
-        success_url: absoluteUrl(`/checkout/${input.storeId}/success?session_id={CHECKOUT_SESSION_ID}`),
-        cancel_url: absoluteUrl(`/checkout/${input.storeId}`),
-        billing_address_collection: "auto",
-        shipping_address_collection: {
-          allowed_countries: ["US", "CA", "GB", "AU"], // Adjust your target shipping regions
-        },
-        metadata: {
-          storeId: input.storeId,
-          // Store a stringified version of custom identifiers
-          items: JSON.stringify(input.items.map(i => ({ id: i.productId, qty: i.quantity })))
-        },
-      }
-    )
-
-    return { 
+    return {
       data: {
-        url: session.url 
+        url: session.url,
       },
-      error: null 
+      error: null,
     }
   } catch (err) {
-    return { 
+    return {
       data: null,
-      error: getErrorMessage(err) 
+      error: getErrorMessage(err),
     }
   }
 }

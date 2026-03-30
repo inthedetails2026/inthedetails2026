@@ -6,6 +6,7 @@ import { DotsHorizontalIcon } from "@radix-ui/react-icons"
 import { type ColumnDef } from "@tanstack/react-table"
 
 import { formatDate, formatPrice } from "@/lib/utils"
+import { useDataTable } from "@/hooks/use-data-table"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -13,7 +14,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { useDataTable } from "@/hooks/use-data-table"
 import { DataTable } from "@/components/data-table/data-table"
 import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header"
 

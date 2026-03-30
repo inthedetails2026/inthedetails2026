@@ -80,11 +80,13 @@ export function CheckoutForm({
       confirmParams: {
         return_url: absoluteUrl(`/checkout/${storeId}/success`),
         receipt_email: email,
-        shipping: addressValues ? {
-          name: addressValues.name,
-          address: addressValues.address,
-          phone: addressValues.phone,
-        } : undefined,
+        shipping: addressValues
+          ? {
+              name: addressValues.name,
+              address: addressValues.address,
+              phone: addressValues.phone,
+            }
+          : undefined,
       },
     })
 

@@ -8,10 +8,10 @@ export function CategoryCardSkeleton() {
       <AspectRatio ratio={1}>
         <Skeleton className="size-full" />
       </AspectRatio>
-      <div className="absolute bottom-0 p-6 space-y-2 w-full">
+      <div className="absolute bottom-0 w-full space-y-2 p-6">
         <Skeleton className="h-6 w-1/2 bg-white/20" />
         <Skeleton className="h-4 w-5/6 bg-white/20" />
-        <Skeleton className="h-4 w-1/4 bg-white/20 mt-4" />
+        <Skeleton className="mt-4 h-4 w-1/4 bg-white/20" />
       </div>
     </Card>
   )

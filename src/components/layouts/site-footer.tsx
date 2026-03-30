@@ -49,7 +49,7 @@ export function SiteFooter() {
             <JoinNewsletterForm />
           </section>
         </section>
-        <section className="flex justify-between items-center space-x-4">
+        <section className="flex items-center justify-between space-x-4">
           <div className="flex-1 text-left text-sm leading-loose text-muted-foreground">
             © {new Date().getFullYear()} {siteConfig.name}. All rights reserved.
           </div>

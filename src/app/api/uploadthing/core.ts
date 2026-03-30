@@ -1,8 +1,8 @@
 import { createUploadthing, type FileRouter } from "uploadthing/next"
 import { UploadThingError } from "uploadthing/server"
 
-import { createClient } from "@/lib/supabase/server"
 import { ratelimit } from "@/lib/rate-limit"
+import { createClient } from "@/lib/supabase/server"
 
 const f = createUploadthing()
 
@@ -16,7 +16,9 @@ export const ourFileRouter = {
 
       // Rate limit the upload
       const ip =
-        (req.headers.get("x-forwarded-for") ?? "127.0.0.1").split(",")[0]?.trim() ?? "127.0.0.1"
+        (req.headers.get("x-forwarded-for") ?? "127.0.0.1")
+          .split(",")[0]
+          ?.trim() ?? "127.0.0.1"
 
       const { success } = await ratelimit.limit(ip)
 

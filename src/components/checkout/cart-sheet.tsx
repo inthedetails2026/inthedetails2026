@@ -63,7 +63,8 @@ export async function CartSheet() {
                 <div className="flex">
                   <span className="flex-1">Shipping</span>
                   <span>
-                    {cartLineItems[0]?.deliveryFee && cartLineItems[0].deliveryFee > 0
+                    {cartLineItems[0]?.deliveryFee &&
+                    cartLineItems[0].deliveryFee > 0
                       ? formatPrice(cartLineItems[0].deliveryFee / 100)
                       : "Free"}
                   </span>
@@ -76,7 +77,10 @@ export async function CartSheet() {
                   <span className="flex-1">Total</span>
                   <span className="font-bold">
                     {formatPrice(
-                      (cartTotal + (cartLineItems[0]?.deliveryFee ?? 0) / 100).toFixed(2)
+                      (
+                        cartTotal +
+                        (cartLineItems[0]?.deliveryFee ?? 0) / 100
+                      ).toFixed(2)
                     )}
                   </span>
                 </div>

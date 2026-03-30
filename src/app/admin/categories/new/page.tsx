@@ -6,6 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+
 import { AddCategoryForm } from "./_components/add-category-form"
 
 export default async function NewCategoryPage() {
@@ -22,7 +23,8 @@ export default async function NewCategoryPage() {
           <CardHeader>
             <CardTitle>Create Main Category</CardTitle>
             <CardDescription>
-              A top level category that shows in the header navigation (e.g. Lighting, Furniture).
+              A top level category that shows in the header navigation (e.g.
+              Lighting, Furniture).
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -34,7 +36,8 @@ export default async function NewCategoryPage() {
           <CardHeader>
             <CardTitle>Create Subcategory</CardTitle>
             <CardDescription>
-              A nested category that belongs to a Main Category (e.g. Couches belongs to Furniture).
+              A nested category that belongs to a Main Category (e.g. Couches
+              belongs to Furniture).
             </CardDescription>
           </CardHeader>
           <CardContent>

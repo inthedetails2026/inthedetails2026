@@ -7,7 +7,9 @@ import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import type { z } from "zod"
 
+import { saveUserAddress } from "@/lib/actions/auth"
 import { showErrorToast } from "@/lib/handle-error"
+import { createClient } from "@/lib/supabase/client"
 import { signUpSchema } from "@/lib/validations/auth"
 import { Button } from "@/components/ui/button"
 import {
@@ -21,8 +23,6 @@ import {
 import { Input } from "@/components/ui/input"
 import { Icons } from "@/components/icons"
 import { PasswordInput } from "@/components/password-input"
-import { createClient } from "@/lib/supabase/client"
-import { saveUserAddress } from "@/lib/actions/auth"
 
 type Inputs = z.infer<typeof signUpSchema>
 
@@ -59,15 +59,18 @@ export function SignUpForm() {
           emailRedirectTo: `${window.location.origin}/auth/callback`,
           data: {
             full_name: data.name,
-          }
+          },
         },
       })
 
       if (authError) throw authError
       if (!authData.user) throw new Error("No user returned")
 
-      const { error: addressError } = await saveUserAddress(data, authData.user.id)
-      
+      const { error: addressError } = await saveUserAddress(
+        data,
+        authData.user.id
+      )
+
       if (addressError) throw new Error(addressError)
 
       toast.message("Check your email", {
@@ -136,8 +139,8 @@ export function SignUpForm() {
             </FormItem>
           )}
         />
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <FormField
             control={form.control}
             name="line1"

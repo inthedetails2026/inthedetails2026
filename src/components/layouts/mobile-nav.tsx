@@ -97,8 +97,7 @@ export function MobileNav({ items }: MobileNavProps) {
   )
 }
 
-interface MobileLinkProps
-  extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
+interface MobileLinkProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
   href: string
   disabled?: boolean
   segment: string

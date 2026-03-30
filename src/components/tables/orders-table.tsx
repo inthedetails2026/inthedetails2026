@@ -3,7 +3,7 @@
 import * as React from "react"
 import Link from "next/link"
 import { type Order } from "@/db/schema"
-import type { StripePaymentStatus } from "@/types"
+import type { DataTableFilterField, StripePaymentStatus } from "@/types"
 import { DotsHorizontalIcon } from "@radix-ui/react-icons"
 import { type ColumnDef } from "@tanstack/react-table"
 import { Phone } from "lucide-react"
@@ -14,7 +14,6 @@ import {
 } from "@/lib/checkout"
 import { cn, formatDate, formatId, formatPrice } from "@/lib/utils"
 import { useDataTable } from "@/hooks/use-data-table"
-import type { DataTableFilterField } from "@/types"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -26,7 +25,12 @@ import {
 import { DataTable } from "@/components/data-table/data-table"
 import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header"
 
-type OrderItem = { productId: string; price: number; quantity: number; name?: string }
+type OrderItem = {
+  productId: string
+  price: number
+  quantity: number
+  name?: string
+}
 
 type AwaitedOrder = Pick<Order, "id" | "quantity" | "amount" | "createdAt"> & {
   customer: string | null
@@ -61,7 +65,9 @@ export function OrdersTable({
           <DataTableColumnHeader column={column} title="Order ID" />
         ),
         cell: ({ cell }) => (
-          <span className="font-mono text-xs">{formatId(String(cell.getValue()))}</span>
+          <span className="font-mono text-xs">
+            {formatId(String(cell.getValue()))}
+          </span>
         ),
       },
       {
@@ -71,10 +77,14 @@ export function OrdersTable({
         ),
         cell: ({ row }) => (
           <div>
-            <p className="font-medium">{row.original.name ?? row.original.customer ?? "—"}</p>
-            <p className="text-xs text-muted-foreground">{row.original.customer}</p>
+            <p className="font-medium">
+              {row.original.name ?? row.original.customer ?? "—"}
+            </p>
+            <p className="text-xs text-muted-foreground">
+              {row.original.customer}
+            </p>
             {row.original.phone && (
-              <p className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
+              <p className="mt-0.5 flex items-center gap-1 text-xs text-muted-foreground">
                 <Phone className="size-3" />
                 {row.original.phone}
               </p>
@@ -89,7 +99,8 @@ export function OrdersTable({
         ),
         cell: ({ row }) => {
           const items = row.original.items
-          if (!items || items.length === 0) return <span className="text-muted-foreground text-xs">—</span>
+          if (!items || items.length === 0)
+            return <span className="text-xs text-muted-foreground">—</span>
           return (
             <div className="space-y-1">
               {items.map((item, i) => (
@@ -97,7 +108,7 @@ export function OrdersTable({
                   <span className="font-medium">
                     {item.name ?? `Product #${item.productId?.slice(0, 6)}`}
                   </span>
-                  <span className="text-muted-foreground ml-1">
+                  <span className="ml-1 text-muted-foreground">
                     × {item.quantity} @ {formatPrice(item.price)}
                   </span>
                 </div>
@@ -139,7 +150,9 @@ export function OrdersTable({
           <DataTableColumnHeader column={column} title="Total" />
         ),
         cell: ({ cell }) => (
-          <span className="font-semibold">{formatPrice(cell.getValue() as number)}</span>
+          <span className="font-semibold">
+            {formatPrice(cell.getValue() as number)}
+          </span>
         ),
       },
       {
@@ -148,7 +161,9 @@ export function OrdersTable({
           <DataTableColumnHeader column={column} title="Date" />
         ),
         cell: ({ cell }) => (
-          <span className="text-xs text-muted-foreground">{formatDate(cell.getValue() as Date)}</span>
+          <span className="text-xs text-muted-foreground">
+            {formatDate(cell.getValue() as Date)}
+          </span>
         ),
         enableColumnFilter: false,
       },
@@ -209,9 +224,5 @@ export function OrdersTable({
     defaultSort: "createdAt.desc",
   })
 
-  return (
-    <DataTable
-      table={table}
-    />
-  )
+  return <DataTable table={table} />
 }

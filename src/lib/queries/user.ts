@@ -4,20 +4,21 @@ import { cache } from "react"
 import { unstable_noStore as noStore } from "next/cache"
 import { db } from "@/db"
 import { products, stores } from "@/db/schema"
-import { createClient } from "@/lib/supabase/server"
 import { count, countDistinct, eq } from "drizzle-orm"
 
 import { getPlan } from "@/lib/actions/stripe"
 import { getPlanLimits } from "@/lib/subscription"
+import { createClient } from "@/lib/supabase/server"
 
 const getSupabaseUser = async () => {
   const supabase = createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
   return user
 }
 
 export const getCachedUser = cache(getSupabaseUser)
-
 
 export async function getUserUsageMetrics(input: { userId: string }) {
   noStore()

@@ -1,7 +1,14 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { getStore } from "@/lib/store"
-import { UpdateStoreForm } from "./_components/update-store-form"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { Icons } from "@/components/icons"
+
+import { UpdateStoreForm } from "./_components/update-store-form"
 
 export const metadata = {
   title: "Settings",

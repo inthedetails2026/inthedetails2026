@@ -20,8 +20,9 @@ export function DropdownSignOut() {
     setIsPending(true)
     try {
       // Clear cart cookie on sign out
-      document.cookie = "cartId=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;"
-      
+      document.cookie =
+        "cartId=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;"
+
       const supabase = createBrowserClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!

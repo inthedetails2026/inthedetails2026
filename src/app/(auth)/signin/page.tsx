@@ -1,8 +1,16 @@
 import { type Metadata } from "next"
 import Link from "next/link"
+
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { Shell } from "@/components/shell"
 
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { SignInForm } from "../_components/signin-form"
 
 export const metadata: Metadata = {

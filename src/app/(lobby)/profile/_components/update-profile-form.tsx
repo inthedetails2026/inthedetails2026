@@ -1,10 +1,11 @@
 "use client"
 
 import * as React from "react"
-import type { User } from "@supabase/supabase-js"
-import { createBrowserClient } from "@supabase/ssr"
 import { useRouter } from "next/navigation"
+import { createBrowserClient } from "@supabase/ssr"
+import type { User } from "@supabase/supabase-js"
 import { toast } from "sonner"
+
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -63,7 +64,9 @@ export function UpdateProfileForm({ user }: UpdateProfileFormProps) {
           disabled
           className="bg-muted"
         />
-        <p className="text-xs text-muted-foreground">Email cannot be changed here.</p>
+        <p className="text-xs text-muted-foreground">
+          Email cannot be changed here.
+        </p>
       </div>
 
       <div className="space-y-2">
@@ -79,7 +82,10 @@ export function UpdateProfileForm({ user }: UpdateProfileFormProps) {
 
       <div className="space-y-2">
         <Label htmlFor="phone">
-          Phone Number <span className="text-muted-foreground text-xs">(used for delivery updates)</span>
+          Phone Number{" "}
+          <span className="text-xs text-muted-foreground">
+            (used for delivery updates)
+          </span>
         </Label>
         <Input
           id="phone"

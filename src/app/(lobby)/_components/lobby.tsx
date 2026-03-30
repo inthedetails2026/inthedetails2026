@@ -46,7 +46,6 @@ export async function Lobby({
         className="mx-auto items-center gap-2 text-center"
         withPadding
       >
-
         <PageHeaderHeading
           className="animate-fade-up"
           style={{ animationDelay: "0.20s", animationFillMode: "both" }}
@@ -90,4 +89,3 @@ export async function Lobby({
     </Shell>
   )
 }
-

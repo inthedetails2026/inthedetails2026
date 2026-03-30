@@ -1,15 +1,14 @@
+import type { MainNavItem } from "@/types"
 import type { User } from "@supabase/supabase-js"
 
-
 import { siteConfig } from "@/config/site"
+import { getCategories, getSubcategories } from "@/lib/queries/product"
+import { slugify } from "@/lib/utils"
 import { CartSheet } from "@/components/checkout/cart-sheet"
 import { AuthDropdown } from "@/components/layouts/auth-dropdown"
 import { MainNav } from "@/components/layouts/main-nav"
 import { MobileNav } from "@/components/layouts/mobile-nav"
 import { ProductsCombobox } from "@/components/products-combobox"
-import { getCategories, getSubcategories } from "@/lib/queries/product"
-import { slugify } from "@/lib/utils"
-import type { MainNavItem } from "@/types"
 
 interface SiteHeaderProps {
   user: User | null

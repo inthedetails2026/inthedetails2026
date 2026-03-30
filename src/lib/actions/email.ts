@@ -1,9 +1,10 @@
 "use server"
 
 import { env } from "@/env.js"
+
+import { getErrorMessage } from "@/lib/handle-error"
 import { resend } from "@/lib/resend"
 import { type ContactEmailSchema } from "@/lib/validations/email"
-import { getErrorMessage } from "@/lib/handle-error"
 
 export async function sendContactEmail(input: ContactEmailSchema) {
   try {

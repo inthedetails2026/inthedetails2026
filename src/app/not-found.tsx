@@ -1,8 +1,14 @@
-import { Shell } from "@/components/shell"
-import { PageHeader, PageHeaderHeading, PageHeaderDescription, PageActions } from "@/components/page-header"
-import { buttonVariants } from "@/components/ui/button"
 import Link from "next/link"
+
 import { cn } from "@/lib/utils"
+import { buttonVariants } from "@/components/ui/button"
+import {
+  PageActions,
+  PageHeader,
+  PageHeaderDescription,
+  PageHeaderHeading,
+} from "@/components/page-header"
+import { Shell } from "@/components/shell"
 
 export default function NotFound() {
   return (

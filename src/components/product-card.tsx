@@ -8,8 +8,8 @@ import { CheckIcon, EyeOpenIcon, PlusIcon } from "@radix-ui/react-icons"
 import { toast } from "sonner"
 
 import { addToCart } from "@/lib/actions/cart"
-import { cn, formatPrice } from "@/lib/utils"
 import { safeParseImages } from "@/lib/images"
+import { cn, formatPrice } from "@/lib/utils"
 import { AspectRatio } from "@/components/ui/aspect-ratio"
 import { Badge } from "@/components/ui/badge"
 import { Button, buttonVariants } from "@/components/ui/button"
@@ -71,9 +71,14 @@ export function ProductCard({
       <Link href={`/product/${product.id}`} tabIndex={-1}>
         <CardContent className="space-y-1.5 p-4">
           <div className="flex items-center justify-between gap-4">
-            <CardTitle className="line-clamp-1 flex-1">{product.name}</CardTitle>
+            <CardTitle className="line-clamp-1 flex-1">
+              {product.name}
+            </CardTitle>
             {product.category && (
-              <Badge variant="secondary" className="px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-secondary/30 border-secondary/10 hover:bg-secondary/40 h-fit">
+              <Badge
+                variant="secondary"
+                className="h-fit border-secondary/10 bg-secondary/30 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider hover:bg-secondary/40"
+              >
                 {product.category}
               </Badge>
             )}

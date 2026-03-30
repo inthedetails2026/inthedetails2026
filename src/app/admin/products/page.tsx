@@ -1,8 +1,9 @@
 import * as React from "react"
 import Link from "next/link"
+
+import { getCategories, getProducts } from "@/lib/queries/product"
 import { getStoreId } from "@/lib/store"
 import { Button } from "@/components/ui/button"
-import { getProducts, getCategories } from "@/lib/queries/product"
 import { ProductsTable } from "@/components/tables/products-table"
 
 export default async function AdminProductsPage({
@@ -13,11 +14,11 @@ export default async function AdminProductsPage({
   }
 }) {
   const storeId = await getStoreId()
-  
+
   const productsPromise = getProducts({
     ...searchParams,
     store_ids: storeId,
-    active: 'false',
+    active: "false",
   })
   const categoriesPromise = getCategories()
 
@@ -29,7 +30,7 @@ export default async function AdminProductsPage({
           <Link href="/admin/products/new">Add Product</Link>
         </Button>
       </div>
-      
+
       <React.Suspense fallback={<div>Loading...</div>}>
         <ProductsTable
           promise={productsPromise}

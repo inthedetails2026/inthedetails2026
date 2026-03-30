@@ -1,10 +1,10 @@
 import * as React from "react"
-import Link from "next/link"
 import { unstable_noStore as noStore } from "next/cache"
+import Link from "next/link"
 import { Edit2, Plus, Trash2 } from "lucide-react"
 
-import { getCategories, getSubcategories } from "@/lib/queries/product"
 import { deleteCategory, deleteSubcategory } from "@/lib/actions/category"
+import { getCategories, getSubcategories } from "@/lib/queries/product"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -21,6 +21,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+
 import { DeleteCategoryButton } from "./_components/delete-buttons"
 
 export default async function AdminCategoriesPage() {
@@ -69,7 +70,9 @@ export default async function AdminCategoriesPage() {
                 ) : (
                   categories.map((category) => (
                     <TableRow key={category.id}>
-                      <TableCell className="font-medium">{category.name}</TableCell>
+                      <TableCell className="font-medium">
+                        {category.name}
+                      </TableCell>
                       <TableCell>{category.slug}</TableCell>
                       <TableCell className="flex items-center gap-2">
                         <Link href={`/admin/categories/${category.id}`}>
@@ -78,7 +81,10 @@ export default async function AdminCategoriesPage() {
                             <span className="sr-only">Edit</span>
                           </Button>
                         </Link>
-                        <DeleteCategoryButton id={category.id!} type="category" />
+                        <DeleteCategoryButton
+                          id={category.id!}
+                          type="category"
+                        />
                       </TableCell>
                     </TableRow>
                   ))
@@ -113,14 +119,21 @@ export default async function AdminCategoriesPage() {
                   </TableRow>
                 ) : (
                   subcategories.map((sub) => {
-                    const parent = categories.find((c) => c.id === sub.categoryId)
+                    const parent = categories.find(
+                      (c) => c.id === sub.categoryId
+                    )
 
                     return (
                       <TableRow key={sub.id}>
-                        <TableCell className="font-medium">{sub.name}</TableCell>
+                        <TableCell className="font-medium">
+                          {sub.name}
+                        </TableCell>
                         <TableCell>{parent?.name ?? sub.categoryId}</TableCell>
                         <TableCell>
-                          <DeleteCategoryButton id={sub.id!} type="subcategory" />
+                          <DeleteCategoryButton
+                            id={sub.id!}
+                            type="subcategory"
+                          />
                         </TableCell>
                       </TableRow>
                     )

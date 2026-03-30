@@ -4,19 +4,20 @@ import { revalidatePath } from "next/cache"
 import { db } from "@/db"
 import { notifications } from "@/db/schema"
 import { env } from "@/env.js"
-import { createClient } from "@/lib/supabase/server"
 import { eq } from "drizzle-orm"
 
 import { getErrorMessage } from "@/lib/handle-error"
 import { resend } from "@/lib/resend"
+import { createClient } from "@/lib/supabase/server"
 import type { UpdateNotificationSchema } from "@/lib/validations/notification"
 import NewsletterWelcomeEmail from "@/components/emails/newsletter-welcome-email"
-
 
 export async function updateNotification(input: UpdateNotificationSchema) {
   try {
     const supabase = createClient()
-    const { data: { user } } = await supabase.auth.getUser()
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
 
     const notification = await db
       .select({
@@ -30,7 +31,6 @@ export async function updateNotification(input: UpdateNotificationSchema) {
     if (!notification) {
       throw new Error("Email not found.")
     }
-
 
     if (input.newsletter && !notification.newsletter) {
       await resend.emails.send({

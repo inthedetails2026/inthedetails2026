@@ -2,15 +2,19 @@ import type { Metadata } from "next"
 import { env } from "@/env.js"
 import type { SearchParams } from "@/types"
 
-import { getProducts, getCategoryBySlug, getSubcategoriesByCategory } from "@/lib/queries/product"
+import {
+  getCategoryBySlug,
+  getProducts,
+  getSubcategoriesByCategory,
+} from "@/lib/queries/product"
 import { slugify, toTitleCase } from "@/lib/utils"
 import {
   PageHeader,
   PageHeaderDescription,
   PageHeaderHeading,
 } from "@/components/page-header"
-import { Shell } from "@/components/shell"
 import { Products } from "@/components/products"
+import { Shell } from "@/components/shell"
 
 interface CategoryPageProps {
   params: {
@@ -34,20 +38,22 @@ export default async function CategoryPage({
   const categorySlug = slugify(params.category)
 
   const categoryData = await getCategoryBySlug({ slug: categorySlug })
-  
+
   const productsTransaction = await getProducts({
     ...searchParams,
     categories: categoryData?.id,
   })
 
-  const subcategories = categoryData 
+  const subcategories = categoryData
     ? await getSubcategoriesByCategory({ categoryId: categoryData.id })
     : []
 
   return (
     <Shell>
       <PageHeader>
-        <PageHeaderHeading size="sm">{toTitleCase(categorySlug)}</PageHeaderHeading>
+        <PageHeaderHeading size="sm">
+          {toTitleCase(categorySlug)}
+        </PageHeaderHeading>
         <PageHeaderDescription size="sm">
           {`Explore our ${categorySlug} collection`}
         </PageHeaderDescription>

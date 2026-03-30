@@ -2,14 +2,14 @@ import { type Metadata } from "next"
 import { env } from "@/env.js"
 import type { SearchParams } from "@/types"
 
-import { getProducts, getCategories } from "@/lib/queries/product"
+import { getCategories, getProducts } from "@/lib/queries/product"
 import {
   PageHeader,
   PageHeaderDescription,
   PageHeaderHeading,
 } from "@/components/page-header"
-import { Shell } from "@/components/shell"
 import { Products } from "@/components/products"
+import { Shell } from "@/components/shell"
 
 export const metadata: Metadata = {
   metadataBase: new URL(env.NEXT_PUBLIC_APP_URL),
@@ -35,11 +35,7 @@ export default async function ProductsPage({
           Buy products from our stores
         </PageHeaderDescription>
       </PageHeader>
-      <Products
-        products={data}
-        pageCount={pageCount}
-        categories={categories}
-      />
+      <Products products={data} pageCount={pageCount} categories={categories} />
     </Shell>
   )
 }

@@ -1,7 +1,16 @@
 import Link from "next/link"
-import { ExternalLink, LayoutDashboard, Package, Settings, ShoppingCart, Users, Tags } from "lucide-react"
+import {
+  ExternalLink,
+  LayoutDashboard,
+  Package,
+  Settings,
+  ShoppingCart,
+  Tags,
+  Users,
+} from "lucide-react"
 
 import { cn } from "@/lib/utils"
+
 import { SignOutButton } from "./_components/sign-out-button"
 
 interface AdminLayoutProps {
@@ -45,19 +54,19 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   return (
     <div className="flex min-h-screen">
       {/* Sidebar */}
-      <aside className="w-64 border-r bg-muted/40 hidden md:flex flex-col">
+      <aside className="hidden w-64 flex-col border-r bg-muted/40 md:flex">
         <div className="flex h-14 items-center border-b px-6">
           <Link href="/admin" className="font-bold">
             Admin Panel
           </Link>
         </div>
-        <nav className="flex-1 overflow-y-auto p-4 space-y-2">
+        <nav className="flex-1 space-y-2 overflow-y-auto p-4">
           {sidebarItems.map((item) => (
             <Link
               key={item.href}
               href={item.href}
               className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-muted transition-all"
+                "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all hover:bg-muted"
               )}
             >
               <item.icon className="h-4 w-4" />
@@ -66,10 +75,10 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           ))}
         </nav>
         {/* Bottom actions */}
-        <div className="border-t p-4 flex flex-col gap-2">
+        <div className="flex flex-col gap-2 border-t p-4">
           <Link
             href="/"
-            className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-all"
+            className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-all hover:bg-muted hover:text-foreground"
           >
             <ExternalLink className="h-4 w-4" />
             View Store
@@ -85,7 +94,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           <div className="ml-auto flex items-center gap-2">
             <Link
               href="/"
-              className="flex items-center gap-2 rounded-md px-3 py-1.5 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-all"
+              className="flex items-center gap-2 rounded-md px-3 py-1.5 text-sm font-medium text-muted-foreground transition-all hover:bg-muted hover:text-foreground"
             >
               <ExternalLink className="h-4 w-4" />
               View Store

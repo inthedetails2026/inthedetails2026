@@ -3,11 +3,11 @@
 import * as React from "react"
 import { useRouter } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
-
 import { useForm } from "react-hook-form"
 import type { z } from "zod"
 
 import { showErrorToast } from "@/lib/handle-error"
+import { createClient } from "@/lib/supabase/client"
 import { authSchema } from "@/lib/validations/auth"
 import { Button } from "@/components/ui/button"
 import {
@@ -23,8 +23,6 @@ import { Icons } from "@/components/icons"
 import { PasswordInput } from "@/components/password-input"
 
 type Inputs = z.infer<typeof authSchema>
-
-import { createClient } from "@/lib/supabase/client"
 
 export function SignInForm() {
   const router = useRouter()
@@ -61,7 +59,6 @@ export function SignInForm() {
       setLoading(false)
     }
   }
-
 
   return (
     <Form {...form}>

@@ -1,5 +1,4 @@
 import { toast } from "sonner"
-
 import * as z from "zod"
 
 import { unknownError } from "@/lib/constants"
@@ -13,7 +12,6 @@ export function getErrorMessage(err: unknown) {
     return unknownError
   }
 }
-
 
 export function showErrorToast(err: unknown) {
   const errorMessage = getErrorMessage(err)

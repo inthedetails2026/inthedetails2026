@@ -3,11 +3,12 @@ import type { Metadata } from "next"
 import { unstable_noStore as noStore } from "next/cache"
 import { notFound } from "next/navigation"
 import { db } from "@/db"
-import { orders, stores, addresses, products, type Order } from "@/db/schema"
+import { addresses, orders, products, stores, type Order } from "@/db/schema"
 import { env } from "@/env.js"
 import type { SearchParams } from "@/types"
 import { and, asc, desc, eq, gte, inArray, like, lte, sql } from "drizzle-orm"
 
+import { getStoreId } from "@/lib/store"
 import { ordersSearchParamsSchema } from "@/lib/validations/params"
 import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton"
 import { DateRangePicker } from "@/components/date-range-picker"
@@ -19,17 +20,12 @@ export const metadata: Metadata = {
   description: "Manage your orders",
 }
 
-import { getStoreId } from "@/lib/store"
-
 interface OrdersPageProps {
   searchParams: SearchParams
 }
 
-export default async function OrdersPage({
-  searchParams,
-}: OrdersPageProps) {
+export default async function OrdersPage({ searchParams }: OrdersPageProps) {
   const storeId = await getStoreId()
-
 
   const { page, per_page, sort, customer, status, from, to } =
     ordersSearchParamsSchema.parse(searchParams)
@@ -143,8 +139,9 @@ export default async function OrdersPage({
 
       const productIds = Array.from(
         new Set(
-          data.flatMap((order) =>
-            (order.items as any[])?.map((item) => item.productId) ?? []
+          data.flatMap(
+            (order) =>
+              (order.items as any[])?.map((item) => item.productId) ?? []
           )
         )
       )
@@ -155,18 +152,18 @@ export default async function OrdersPage({
           .select({ id: products.id, name: products.name })
           .from(products)
           .where(inArray(products.id, productIds))
-        
+
         foundProducts.forEach((p) => productsMap.set(p.id, p.name))
       }
 
       const enrichedData = data.map((order) => {
         const enhancedItems = ((order.items as any[]) ?? []).map((item) => ({
           ...item,
-          name: productsMap.get(item.productId) ?? undefined
+          name: productsMap.get(item.productId) ?? undefined,
         }))
         return {
           ...order,
-          items: enhancedItems
+          items: enhancedItems,
         }
       })
 

@@ -5,8 +5,9 @@ import { AspectRatio } from "@/components/ui/aspect-ratio"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Icons } from "@/components/icons"
 
-interface PlaceholderImageProps
-  extends React.ComponentPropsWithoutRef<typeof AspectRatio> {
+interface PlaceholderImageProps extends React.ComponentPropsWithoutRef<
+  typeof AspectRatio
+> {
   isSkeleton?: boolean
   asChild?: boolean
 }

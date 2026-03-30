@@ -104,12 +104,14 @@ export default async function CheckoutPage({ params }: CheckoutPageProps) {
                     <div className="flex-1">Subtotal</div>
                     <div>{formatPrice(subtotal)}</div>
                   </div>
-                  <div className="flex text-sm text-muted-foreground italic">
+                  <div className="flex text-sm italic text-muted-foreground">
                     <div className="flex-1">Delivery Fee</div>
-                    <div>{deliveryFee > 0 ? formatPrice(deliveryFee) : "Free"}</div>
+                    <div>
+                      {deliveryFee > 0 ? formatPrice(deliveryFee) : "Free"}
+                    </div>
                   </div>
                   <Separator />
-                  <div className="flex font-bold text-lg">
+                  <div className="flex text-lg font-bold">
                     <div className="flex-1">Total</div>
                     <div>{formatPrice(total)}</div>
                   </div>

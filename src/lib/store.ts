@@ -1,6 +1,6 @@
 import { db } from "@/db"
 import { stores } from "@/db/schema"
-import { eq, asc } from "drizzle-orm"
+import { asc, eq } from "drizzle-orm"
 
 export async function getStore() {
   // First, try to find the canonical store by slug
@@ -39,7 +39,6 @@ export async function getStore() {
 
   return newStore
 }
-
 
 export async function getStoreId() {
   const store = await getStore()

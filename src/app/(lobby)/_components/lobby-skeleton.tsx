@@ -1,6 +1,6 @@
 import Link from "next/link"
-import { siteConfig } from "@/config/site"
 
+import { siteConfig } from "@/config/site"
 import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -66,4 +66,3 @@ export function LobbySkeleton() {
     </Shell>
   )
 }
-

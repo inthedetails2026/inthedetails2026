@@ -13,6 +13,7 @@ import {
   getSaleCount,
   getSales,
 } from "@/lib/actions/order"
+import { getStoreId } from "@/lib/store"
 import { cn, formatNumber, formatPrice } from "@/lib/utils"
 import { searchParamsSchema } from "@/lib/validations/params"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
@@ -42,8 +43,6 @@ export const metadata: Metadata = {
   description: "Analytics for your store",
 }
 
-import { getStoreId } from "@/lib/store"
-
 interface AnalyticsPageProps {
   searchParams: SearchParams
 }
@@ -52,7 +51,6 @@ export default async function AnalyticsPage({
   searchParams,
 }: AnalyticsPageProps) {
   const storeId = await getStoreId()
-
 
   const { page, from, to } = searchParamsSchema
     .omit({ per_page: true, sort: true })

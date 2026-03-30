@@ -4,8 +4,10 @@ import { LineChart, type LineChartProps } from "@tremor/react"
 
 import { cn, formatPrice } from "@/lib/utils"
 
-interface SalesChartProps
-  extends Omit<LineChartProps, "data" | "index" | "categories"> {
+interface SalesChartProps extends Omit<
+  LineChartProps,
+  "data" | "index" | "categories"
+> {
   data: {
     name: string
     Total: number

@@ -55,7 +55,10 @@ export const getProductsSchema = z.object({
   price_range: z.union([z.string(), z.array(z.string())]).optional(),
   store_ids: z.union([z.string(), z.array(z.string())]).optional(),
   store_page: z.coerce.number().default(1),
-  active: z.union([z.string(), z.array(z.string())]).optional().default("false"),
+  active: z
+    .union([z.string(), z.array(z.string())])
+    .optional()
+    .default("false"),
 })
 
 export const updateProductRatingSchema = z.object({

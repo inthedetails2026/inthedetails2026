@@ -1,13 +1,14 @@
 import { type Metadata } from "next"
 import { notFound } from "next/navigation"
-import type { StoredFile } from "@/types"
 import { db } from "@/db"
 import { products } from "@/db/schema"
 import { env } from "@/env.js"
+import type { StoredFile } from "@/types"
 import { and, eq } from "drizzle-orm"
 
-import { getCategories, getSubcategories } from "@/lib/queries/product"
 import { safeParseImages } from "@/lib/images"
+import { getCategories, getSubcategories } from "@/lib/queries/product"
+import { getStoreId } from "@/lib/store"
 import {
   Card,
   CardContent,
@@ -24,8 +25,6 @@ export const metadata: Metadata = {
   description: "Manage your product",
 }
 
-import { getStoreId } from "@/lib/store"
-
 interface UpdateProductPageProps {
   params: {
     productId: string
@@ -37,7 +36,6 @@ export default async function UpdateProductPage({
 }: UpdateProductPageProps) {
   const storeId = await getStoreId()
   const productId = decodeURIComponent(params.productId)
-
 
   const product = await db.query.products.findFirst({
     where: and(eq(products.id, productId), eq(products.storeId, storeId)),

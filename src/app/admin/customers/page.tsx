@@ -2,11 +2,12 @@ import * as React from "react"
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 import { db } from "@/db"
-import { orders, stores, profiles, addresses } from "@/db/schema"
+import { addresses, orders, profiles, stores } from "@/db/schema"
 import { env } from "@/env.js"
 import type { SearchParams } from "@/types"
 import { and, asc, desc, eq, gte, like, lte, sql } from "drizzle-orm"
 
+import { getStoreId } from "@/lib/store"
 import { customersSearchParamsSchema } from "@/lib/validations/params"
 import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton"
 import { DateRangePicker } from "@/components/date-range-picker"
@@ -18,8 +19,6 @@ export const metadata: Metadata = {
   description: "Customers for your store",
 }
 
-import { getStoreId } from "@/lib/store"
-
 interface CustomersPageProps {
   searchParams: SearchParams
 }
@@ -28,7 +27,6 @@ export default async function CustomersPage({
   searchParams,
 }: CustomersPageProps) {
   const storeId = await getStoreId()
-
 
   const { page, per_page, sort, email, from, to } =
     customersSearchParamsSchema.parse(searchParams)
@@ -75,7 +73,10 @@ export default async function CustomersPage({
         and(
           email ? like(profiles.email, `%${email}%`) : undefined,
           fromDay && toDay
-            ? and(gte(profiles.createdAt, fromDay), lte(profiles.createdAt, toDay))
+            ? and(
+                gte(profiles.createdAt, fromDay),
+                lte(profiles.createdAt, toDay)
+              )
             : undefined
         )
       )
@@ -104,7 +105,10 @@ export default async function CustomersPage({
         and(
           email ? like(profiles.email, `%${email}%`) : undefined,
           fromDay && toDay
-            ? and(gte(profiles.createdAt, fromDay), lte(profiles.createdAt, toDay))
+            ? and(
+                gte(profiles.createdAt, fromDay),
+                lte(profiles.createdAt, toDay)
+              )
             : undefined
         )
       )

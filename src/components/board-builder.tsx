@@ -167,14 +167,14 @@ export function BoardBuilder({
                   checked={active === "true"}
                   onCheckedChange={(value) =>
                     startTransition(() => {
-                      router.push(
+                      ;(router.push(
                         `${pathname}?${createQueryString({
                           active: value ? "true" : "false",
                         })}`
                       ),
                         {
                           scroll: false,
-                        }
+                        })
                     })
                   }
                   disabled={isPending}

@@ -1,13 +1,11 @@
 import { env } from "@/env.js"
 import type { User } from "@supabase/supabase-js"
-
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
-
 
 export function absoluteUrl(path: string) {
   return `${env.NEXT_PUBLIC_APP_URL}${path}`
@@ -102,7 +100,6 @@ export function truncate(str: string, length: number) {
 export function getUserEmail(user: User | null) {
   return user?.email ?? ""
 }
-
 
 export function isMacOs() {
   if (typeof window === "undefined") return false

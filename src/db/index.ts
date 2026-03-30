@@ -10,7 +10,8 @@ declare global {
   var postgresClient: postgres.Sql | undefined
 }
 
-export const client = globalThis.postgresClient || postgres(connectionString, { prepare: false })
+export const client =
+  globalThis.postgresClient || postgres(connectionString, { prepare: false })
 if (env.NODE_ENV !== "production") globalThis.postgresClient = client
 
 export const db = drizzle(client, { schema })

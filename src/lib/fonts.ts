@@ -1,5 +1,5 @@
-import { GeistMono } from "geist/font/mono"
 import { Cormorant_Garamond, Outfit } from "next/font/google"
+import { GeistMono } from "geist/font/mono"
 
 export const fontSans = Outfit({
   subsets: ["latin"],

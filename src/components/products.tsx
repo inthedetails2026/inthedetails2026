@@ -210,7 +210,6 @@ export function Products({
             </SheetHeader>
             <Separator />
             <div className="flex flex-1 flex-col gap-5 overflow-hidden p-1">
-
               <Card className="space-y-4 rounded-lg p-3">
                 <h3 className="text-sm font-medium tracking-wide text-foreground">
                   Price range ($)
@@ -286,7 +285,6 @@ export function Products({
                   />
                 </Card>
               ) : null}
-
             </div>
             <div>
               <Separator className="my-4" />
@@ -366,23 +364,29 @@ export function Products({
         </div>
       ) : null}
       <div className="space-y-14">
-        {(!categoriesParam && !subcategoriesParam && !searchParams?.get("price_range")) ? (
+        {!categoriesParam &&
+        !subcategoriesParam &&
+        !searchParams?.get("price_range") ? (
           // Group by category when no filters are active
-          Array.from(new Set(products.map(p => p.category))).map((catName) => (
-            <div key={catName || "other"} className="space-y-6">
-              <div className="flex items-center gap-4">
-                <h2 className="text-xl font-bold capitalize tracking-tight">{catName || "Other"}</h2>
-                <div className="h-px flex-1 bg-gradient-to-r from-border to-transparent" />
+          Array.from(new Set(products.map((p) => p.category))).map(
+            (catName) => (
+              <div key={catName || "other"} className="space-y-6">
+                <div className="flex items-center gap-4">
+                  <h2 className="text-xl font-bold capitalize tracking-tight">
+                    {catName || "Other"}
+                  </h2>
+                  <div className="h-px flex-1 bg-gradient-to-r from-border to-transparent" />
+                </div>
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                  {products
+                    .filter((p) => p.category === catName)
+                    .map((product) => (
+                      <ProductCard key={product.id} product={product} />
+                    ))}
+                </div>
               </div>
-              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                {products
-                  .filter((p) => p.category === catName)
-                  .map((product) => (
-                    <ProductCard key={product.id} product={product} />
-                  ))}
-              </div>
-            </div>
-          ))
+            )
+          )
         ) : (
           // Normal grid when filtering
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">

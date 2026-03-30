@@ -1,22 +1,21 @@
-import { GeistMono } from "geist/font/mono"
 import { Metadata, Viewport } from "next"
-import { createServerClient, type CookieOptions } from '@supabase/ssr'
-import { cookies } from 'next/headers'
+import { cookies } from "next/headers"
+import { createServerClient, type CookieOptions } from "@supabase/ssr"
+import { GeistMono } from "geist/font/mono"
 
 import "@/styles/globals.css"
 
 import { env } from "@/env.js"
 import { GeistSans } from "geist/font/sans"
 
-
 import { siteConfig } from "@/config/site"
-import { fontHeading, fontSans, fontMono } from "@/lib/fonts"
+import { fontHeading, fontMono, fontSans } from "@/lib/fonts"
 import { absoluteUrl, cn } from "@/lib/utils"
 import { Toaster } from "@/components/ui/toaster"
 import { Analytics } from "@/components/analytics"
 import { ThemeProvider } from "@/components/providers"
-import { WhatsAppButton } from "@/components/whatsapp-button"
 import { TailwindIndicator } from "@/components/tailwind-indicator"
+import { WhatsAppButton } from "@/components/whatsapp-button"
 
 export const metadata: Metadata = {
   metadataBase: new URL(env.NEXT_PUBLIC_APP_URL),
@@ -89,7 +88,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
           cookieStore.set({ name, value, ...options })
         },
         remove(name: string, options: CookieOptions) {
-          cookieStore.set({ name, value: '', ...options })
+          cookieStore.set({ name, value: "", ...options })
         },
       },
     }
@@ -122,5 +121,3 @@ export default function RootLayout({ children }: RootLayoutProps) {
     </html>
   )
 }
-
-

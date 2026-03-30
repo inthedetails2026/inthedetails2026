@@ -4,7 +4,10 @@ import { cn } from "@/lib/utils"
 import { type CartLineItemSchema } from "@/lib/validations/cart"
 
 // @see: https://github.com/jackblatch/OneStopShop/blob/main/server-actions/stripe/payment.ts
-export function calculateOrderAmount(items: CartLineItemSchema[], deliveryFee: number = 0) {
+export function calculateOrderAmount(
+  items: CartLineItemSchema[],
+  deliveryFee: number = 0
+) {
   const subtotal = items.reduce((acc, item) => {
     return acc + Number(item.price) * item.quantity
   }, 0)

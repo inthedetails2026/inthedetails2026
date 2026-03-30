@@ -73,15 +73,20 @@ export function ProductsCombobox() {
     <>
       <Button
         variant="outline"
-        className="relative size-9 p-0 xl:h-10 xl:w-64 xl:justify-start xl:px-4 xl:py-2 bg-muted/30 border-primary/10 hover:bg-muted/50 hover:border-primary/20 transition-all rounded-full"
+        className="relative size-9 rounded-full border-primary/10 bg-muted/30 p-0 transition-all hover:border-primary/20 hover:bg-muted/50 xl:h-10 xl:w-64 xl:justify-start xl:px-4 xl:py-2"
         onClick={() => setOpen(true)}
       >
-        <MagnifyingGlassIcon className="size-4 xl:mr-2 text-muted-foreground" aria-hidden="true" />
-        <span className="hidden xl:inline-flex text-muted-foreground font-sans">Discover the collection...</span>
+        <MagnifyingGlassIcon
+          className="size-4 text-muted-foreground xl:mr-2"
+          aria-hidden="true"
+        />
+        <span className="hidden font-sans text-muted-foreground xl:inline-flex">
+          Discover the collection...
+        </span>
         <span className="sr-only">Search products</span>
         <Kbd
           title={isMacOs() ? "Command" : "Control"}
-          className="pointer-events-none absolute right-2 top-2 hidden xl:flex bg-background border-primary/5"
+          className="pointer-events-none absolute right-2 top-2 hidden border-primary/5 bg-background xl:flex"
         >
           {isMacOs() ? "⌘" : "Ctrl"} K
         </Kbd>

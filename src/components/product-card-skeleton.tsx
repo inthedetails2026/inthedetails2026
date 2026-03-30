@@ -4,8 +4,9 @@ import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { PlaceholderImage } from "@/components/placeholder-image"
 
-interface ProductCardSkeletonProps
-  extends React.ComponentPropsWithoutRef<typeof Card> {}
+interface ProductCardSkeletonProps extends React.ComponentPropsWithoutRef<
+  typeof Card
+> {}
 
 export function ProductCardSkeleton({
   className,

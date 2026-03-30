@@ -15,8 +15,9 @@ export const MotionH1 = motion.h1
 export const MotionP = motion.p
 export const AnimatePresence = MotionPresence
 
-interface MotionShellProps
-  extends React.ComponentPropsWithoutRef<typeof motion.div> {
+interface MotionShellProps extends React.ComponentPropsWithoutRef<
+  typeof motion.div
+> {
   delay?: IntersectionObserverProps["delay"]
   threshold?: IntersectionObserverProps["threshold"]
   once?: IntersectionObserverProps["triggerOnce"]

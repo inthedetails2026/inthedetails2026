@@ -1,10 +1,18 @@
 import * as React from "react"
 import type { Metadata } from "next"
 import { redirect } from "next/navigation"
-import { createClient } from "@/lib/supabase/server"
 import { env } from "@/env.js"
+
+import { createClient } from "@/lib/supabase/server"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+
 import { UpdateProfileForm } from "./_components/update-profile-form"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
 export const metadata: Metadata = {
   metadataBase: new URL(env.NEXT_PUBLIC_APP_URL),
@@ -14,7 +22,9 @@ export const metadata: Metadata = {
 
 export default async function ProfilePage() {
   const supabase = createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
 
   if (!user) {
     redirect("/signin")
@@ -26,7 +36,8 @@ export default async function ProfilePage() {
         <CardHeader>
           <CardTitle className="text-2xl">My Profile</CardTitle>
           <CardDescription>
-            Update your personal information. Your phone number will be used for delivery coordination.
+            Update your personal information. Your phone number will be used for
+            delivery coordination.
           </CardDescription>
         </CardHeader>
         <CardContent>

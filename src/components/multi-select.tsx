@@ -3,6 +3,8 @@
 import * as React from "react"
 import type { Option } from "@/types"
 import { CheckIcon, PlusCircledIcon } from "@radix-ui/react-icons"
+
+import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -20,7 +22,6 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import { Separator } from "@/components/ui/separator"
-import { cn } from "@/lib/utils"
 
 interface MultiSelectProps {
   selected: Option[] | null
@@ -68,7 +69,10 @@ export function MultiSelect({
           </div>
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0" align="start">
+      <PopoverContent
+        className="w-[var(--radix-popover-trigger-width)] p-0"
+        align="start"
+      >
         <Command className="font-sans">
           <CommandInput placeholder={placeholder} />
           <CommandList>
@@ -81,7 +85,10 @@ export function MultiSelect({
                     key={option.value}
                     onSelect={() => {
                       if (isSelected) {
-                        setSelected((prev) => prev?.filter((s) => s.value !== option.value) ?? [])
+                        setSelected(
+                          (prev) =>
+                            prev?.filter((s) => s.value !== option.value) ?? []
+                        )
                       } else {
                         setSelected((prev) => [...(prev ?? []), option])
                       }

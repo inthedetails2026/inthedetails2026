@@ -7,11 +7,7 @@ import {
   type getCategories,
 } from "@/lib/queries/product"
 import { AspectRatio } from "@/components/ui/aspect-ratio"
-import {
-  Card,
-  CardDescription,
-  CardTitle,
-} from "@/components/ui/card"
+import { Card, CardDescription, CardTitle } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Icons } from "@/components/icons"
 
@@ -43,15 +39,17 @@ export function CategoryCard({ category }: CategoryCardProps) {
           )}
         </AspectRatio>
         <div className="absolute inset-x-0 bottom-0 top-0 bg-black/20 transition-colors group-hover:bg-black/40" />
-        <div className="absolute bottom-3 left-3 right-3 z-10 w-fit max-w-[calc(100%-1.5rem)] rounded-lg bg-black/50 p-3 text-white transition-colors group-hover:bg-black/70 shadow-lg">
+        <div className="absolute bottom-3 left-3 right-3 z-10 w-fit max-w-[calc(100%-1.5rem)] rounded-lg bg-black/50 p-3 text-white shadow-lg transition-colors group-hover:bg-black/70">
           <CardTitle className="font-heading text-lg capitalize md:text-xl">
             {category.name}
           </CardTitle>
-          <CardDescription className="line-clamp-2 mt-1 text-xs text-white/90 md:text-sm">
+          <CardDescription className="mt-1 line-clamp-2 text-xs text-white/90 md:text-sm">
             {category.description}
           </CardDescription>
           <div className="mt-2 text-[0.7rem] text-white/70">
-            <React.Suspense fallback={<Skeleton className="h-3 w-16 bg-white/20" />}>
+            <React.Suspense
+              fallback={<Skeleton className="h-3 w-16 bg-white/20" />}
+            >
               <ProductCount productCountPromise={productCountPromise} />
             </React.Suspense>
           </div>

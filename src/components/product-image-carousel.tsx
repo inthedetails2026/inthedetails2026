@@ -16,8 +16,7 @@ type CarouselApi = UseEmblaCarouselType["1"]
 type UseCarouselParameters = Parameters<typeof useEmblaCarousel>
 type CarouselOptions = UseCarouselParameters["0"]
 
-interface ProductImageCarouselProps
-  extends React.HTMLAttributes<HTMLDivElement> {
+interface ProductImageCarouselProps extends React.HTMLAttributes<HTMLDivElement> {
   images: StoredFile[]
   options?: CarouselOptions
 }

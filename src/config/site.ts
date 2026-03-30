@@ -23,7 +23,6 @@ export const siteConfig = {
 
   mainNav: [
     ...productConfig.categories.map((category) => ({
-
       title: category.name,
       items: [
         {

@@ -17,8 +17,7 @@ export default function AuthLayout({ children }: React.PropsWithChildren) {
       <main className="container flex items-center justify-center lg:p-8">
         {children}
       </main>
-      <div className="relative aspect-video size-full hidden lg:block">
-
+      <div className="relative hidden aspect-video size-full lg:block">
         <Image
           src="/images/categories/furniture.png"
           alt="Premium furniture collection"

@@ -9,7 +9,8 @@ export const productConfig = {
     {
       id: "cat_lighting",
       name: "Lighting",
-      description: "Illuminate your space with our premium lighting collection.",
+      description:
+        "Illuminate your space with our premium lighting collection.",
       image: "/images/categories/lighting.png",
       subcategories: [
         {
@@ -32,7 +33,8 @@ export const productConfig = {
     {
       id: "cat_furniture",
       name: "Furniture",
-      description: "Experience the perfect blend of comfort and style with our modern furniture collection.",
+      description:
+        "Experience the perfect blend of comfort and style with our modern furniture collection.",
       image: "/images/categories/furniture.png",
       subcategories: [
         {
@@ -60,7 +62,8 @@ export const productConfig = {
     {
       id: "cat_decor",
       name: "Decor",
-      description: "Complete your home's story with our unique and artistic decor accents.",
+      description:
+        "Complete your home's story with our unique and artistic decor accents.",
       image: "/images/categories/decor.png",
       subcategories: [
         {
@@ -93,7 +96,8 @@ export const productConfig = {
     {
       id: "cat_outdoor_decor",
       name: "Outdoor Decor",
-      description: "Transform your exterior into a private oasis with our beautiful outdoor collection.",
+      description:
+        "Transform your exterior into a private oasis with our beautiful outdoor collection.",
       image: "/images/categories/outdoor-decor.png",
       subcategories: [
         {

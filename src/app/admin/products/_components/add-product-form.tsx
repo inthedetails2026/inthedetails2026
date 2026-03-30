@@ -2,15 +2,15 @@
 
 import * as React from "react"
 import { useRouter } from "next/navigation"
-import { X } from "lucide-react"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { X } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import type { z } from "zod"
 
 import { addProduct } from "@/lib/actions/product"
 import { createProductSchema } from "@/lib/validations/product"
-import { FileUploader } from "@/components/file-uploader"
+import { useUploadFile } from "@/hooks/use-upload-file"
 import { Button } from "@/components/ui/button"
 import {
   Form,
@@ -21,17 +21,17 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
 import {
   Select,
   SelectContent,
-  SelectItem,
   SelectGroup,
+  SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { Textarea } from "@/components/ui/textarea"
+import { FileUploader } from "@/components/file-uploader"
 import { Icons } from "@/components/icons"
-import { useUploadFile } from "@/hooks/use-upload-file"
 
 type Inputs = z.infer<typeof createProductSchema>
 
@@ -47,9 +47,21 @@ export function AddProductForm({ storeId, promises }: AddProductFormProps) {
   const router = useRouter()
   const { categories, subcategories } = React.use(promises)
   const [isPending, startTransition] = React.useTransition()
-  const { uploadFiles: uploadThumbnail, progresses: thumbnailProgresses, uploadedFiles: thumbnail, setUploadedFiles: setThumbnail, isUploading: isUploadingThumbnail } = useUploadFile("productImage", { defaultUploadedFiles: [] })
-  
-  const { uploadFiles: uploadImages, progresses: imagesProgresses, uploadedFiles: images, setUploadedFiles: setImages, isUploading: isUploadingImages } = useUploadFile("productImage", { defaultUploadedFiles: [] })
+  const {
+    uploadFiles: uploadThumbnail,
+    progresses: thumbnailProgresses,
+    uploadedFiles: thumbnail,
+    setUploadedFiles: setThumbnail,
+    isUploading: isUploadingThumbnail,
+  } = useUploadFile("productImage", { defaultUploadedFiles: [] })
+
+  const {
+    uploadFiles: uploadImages,
+    progresses: imagesProgresses,
+    uploadedFiles: images,
+    setUploadedFiles: setImages,
+    isUploading: isUploadingImages,
+  } = useUploadFile("productImage", { defaultUploadedFiles: [] })
 
   const form = useForm<Inputs>({
     resolver: zodResolver(createProductSchema),
@@ -67,7 +79,10 @@ export function AddProductForm({ storeId, promises }: AddProductFormProps) {
   function onSubmit(data: Inputs) {
     startTransition(async () => {
       try {
-        const passedSubcategoryId = !data.subcategoryId || data.subcategoryId === "empty-subcategory" ? null : data.subcategoryId;
+        const passedSubcategoryId =
+          !data.subcategoryId || data.subcategoryId === "empty-subcategory"
+            ? null
+            : data.subcategoryId
 
         const { error } = await addProduct({
           ...data,
@@ -132,7 +147,7 @@ export function AddProductForm({ storeId, promises }: AddProductFormProps) {
             control={form.control}
             name="categoryId"
             render={({ field }) => (
-              <FormItem className="w-full shadow-none mt-2">
+              <FormItem className="mt-2 w-full shadow-none">
                 <FormLabel>Category</FormLabel>
                 <Select
                   value={field.value}
@@ -140,7 +155,9 @@ export function AddProductForm({ storeId, promises }: AddProductFormProps) {
                 >
                   <FormControl>
                     <SelectTrigger className="capitalize">
-                      <SelectValue placeholder={field.value || "Select a category"} />
+                      <SelectValue
+                        placeholder={field.value || "Select a category"}
+                      />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
@@ -171,7 +188,7 @@ export function AddProductForm({ storeId, promises }: AddProductFormProps) {
             control={form.control}
             name="subcategoryId"
             render={({ field }) => (
-              <FormItem className="w-full shadow-none mt-2">
+              <FormItem className="mt-2 w-full shadow-none">
                 <FormLabel>Subcategory</FormLabel>
                 <Select
                   value={field.value || ""}
@@ -180,14 +197,27 @@ export function AddProductForm({ storeId, promises }: AddProductFormProps) {
                 >
                   <FormControl>
                     <SelectTrigger className="capitalize">
-                      <SelectValue placeholder={field.value ? subcategories.find((s: any) => s.id === field.value)?.name : "Select a subcategory"} />
+                      <SelectValue
+                        placeholder={
+                          field.value
+                            ? subcategories.find(
+                                (s: any) => s.id === field.value
+                              )?.name
+                            : "Select a subcategory"
+                        }
+                      />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
                     <SelectGroup>
-                      {subcategories.filter((s:any) => s.categoryId === form.watch("categoryId")).length > 0 ? (
+                      {subcategories.filter(
+                        (s: any) => s.categoryId === form.watch("categoryId")
+                      ).length > 0 ? (
                         subcategories
-                          .filter((s: any) => s.categoryId === form.watch("categoryId"))
+                          .filter(
+                            (s: any) =>
+                              s.categoryId === form.watch("categoryId")
+                          )
                           .map((subcategory: any) => (
                             <SelectItem
                               key={subcategory.id}
@@ -218,10 +248,7 @@ export function AddProductForm({ storeId, promises }: AddProductFormProps) {
               <FormItem className="w-full">
                 <FormLabel>Price</FormLabel>
                 <FormControl>
-                  <Input
-                    placeholder="Type product price here."
-                    {...field}
-                  />
+                  <Input placeholder="Type product price here." {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -253,7 +280,6 @@ export function AddProductForm({ storeId, promises }: AddProductFormProps) {
             // We use a custom render for the double dropzone
             render={({ field }) => (
               <div className="space-y-6">
-                
                 {/* THUMBNAIL SECTION */}
                 <div className="space-y-4">
                   <FormItem className="w-full">
@@ -278,17 +304,24 @@ export function AddProductForm({ storeId, promises }: AddProductFormProps) {
                     <div className="space-y-2">
                       <div className="flex flex-wrap gap-3">
                         {thumbnail.map((file, idx) => (
-                          <div key={file.id} className="relative h-24 w-24 rounded-md overflow-hidden border group">
+                          <div
+                            key={file.id}
+                            className="group relative h-24 w-24 overflow-hidden rounded-md border"
+                          >
                             {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img src={file.url} alt={file.name} className="h-full w-full object-cover" />
-                            <span className="absolute bottom-0 left-0 right-0 bg-black/60 text-white text-[10px] text-center py-0.5 pointer-events-none">
+                            <img
+                              src={file.url}
+                              alt={file.name}
+                              className="h-full w-full object-cover"
+                            />
+                            <span className="pointer-events-none absolute bottom-0 left-0 right-0 bg-black/60 py-0.5 text-center text-[10px] text-white">
                               Thumbnail
                             </span>
                             <Button
                               type="button"
                               variant="destructive"
                               size="icon"
-                              className="absolute top-1 right-1 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                              className="absolute right-1 top-1 h-6 w-6 opacity-0 transition-opacity group-hover:opacity-100"
                               onClick={() => setThumbnail([])}
                             >
                               <X className="h-4 w-4" />
@@ -300,14 +333,15 @@ export function AddProductForm({ storeId, promises }: AddProductFormProps) {
                   )}
                 </div>
 
-                <div className="w-full h-px bg-border" />
+                <div className="h-px w-full bg-border" />
 
                 {/* ADDITIONAL IMAGES SECTION */}
                 <div className="space-y-4">
                   <FormItem className="w-full">
                     <FormLabel>Additional Gallery Images</FormLabel>
                     <p className="text-xs text-muted-foreground">
-                      Up to 3 extra photos to show the product from different angles.
+                      Up to 3 extra photos to show the product from different
+                      angles.
                     </p>
                     <FormControl>
                       <FileUploader
@@ -326,15 +360,26 @@ export function AddProductForm({ storeId, promises }: AddProductFormProps) {
                     <div className="space-y-2">
                       <div className="flex flex-wrap gap-3">
                         {images.map((file) => (
-                          <div key={file.id} className="relative h-24 w-24 rounded-md overflow-hidden border group">
+                          <div
+                            key={file.id}
+                            className="group relative h-24 w-24 overflow-hidden rounded-md border"
+                          >
                             {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img src={file.url} alt={file.name} className="h-full w-full object-cover" />
+                            <img
+                              src={file.url}
+                              alt={file.name}
+                              className="h-full w-full object-cover"
+                            />
                             <Button
                               type="button"
                               variant="destructive"
                               size="icon"
-                              className="absolute top-1 right-1 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
-                              onClick={() => setImages(images.filter((img) => img.id !== file.id))}
+                              className="absolute right-1 top-1 h-6 w-6 opacity-0 transition-opacity group-hover:opacity-100"
+                              onClick={() =>
+                                setImages(
+                                  images.filter((img) => img.id !== file.id)
+                                )
+                              }
                             >
                               <X className="h-4 w-4" />
                             </Button>
@@ -348,7 +393,10 @@ export function AddProductForm({ storeId, promises }: AddProductFormProps) {
             )}
           />
         </div>
-        <Button className="w-fit" disabled={isPending || isUploadingThumbnail || isUploadingImages}>
+        <Button
+          className="w-fit"
+          disabled={isPending || isUploadingThumbnail || isUploadingImages}
+        >
           {(isPending || isUploadingThumbnail || isUploadingImages) && (
             <Icons.spinner
               className="mr-2 size-4 animate-spin"

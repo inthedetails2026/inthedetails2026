@@ -10,14 +10,10 @@ export type IconProps = React.HTMLAttributes<SVGElement>
 
 export const Icons = {
   logo: (props: IconProps) => (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 100 100"
-      {...props}
-    >
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" {...props}>
       {/* Background Yellow Circle */}
       <circle cx="50" cy="50" r="49" fill="#FDC101" />
-      
+
       {/* Hand-drawn style illustration - BOLDER */}
       {/* Potted Plant */}
       <path
@@ -34,7 +30,7 @@ export const Icons = {
         fill="none"
         strokeLinecap="round"
       />
-      
+
       {/* The Armchair */}
       <path
         d="M38 55 Q 50 40 62 55 L 65 75 Q 50 85 35 75 Z"
@@ -51,7 +47,7 @@ export const Icons = {
         fill="none"
         strokeLinecap="round"
       />
-      
+
       {/* Floor Lamp */}
       <path
         d="M75 80 L 75 40 M 75 40 L 60 25"

@@ -3,12 +3,13 @@
 import * as React from "react"
 import { useRouter } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { X } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import * as z from "zod"
-import { X } from "lucide-react"
 
 import { addCategory, addSubcategory } from "@/lib/actions/category"
+import { useUploadFile } from "@/hooks/use-upload-file"
 import { Button } from "@/components/ui/button"
 import {
   Form,
@@ -27,7 +28,6 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
-import { useUploadFile } from "@/hooks/use-upload-file"
 import { FileUploader } from "@/components/file-uploader"
 import { Icons } from "@/components/icons"
 
@@ -52,10 +52,20 @@ export function AddCategoryForm({ type, categories }: AddCategoryFormProps) {
   const router = useRouter()
   const [isPending, startTransition] = React.useTransition()
 
-  const { uploadFiles, progresses, uploadedFiles, setUploadedFiles, isUploading } = useUploadFile("productImage")
+  const {
+    uploadFiles,
+    progresses,
+    uploadedFiles,
+    setUploadedFiles,
+    isUploading,
+  } = useUploadFile("productImage")
 
-  const form = useForm<z.infer<typeof categorySchema> | z.infer<typeof subcategorySchema>>({
-    resolver: zodResolver(type === "category" ? categorySchema : subcategorySchema),
+  const form = useForm<
+    z.infer<typeof categorySchema> | z.infer<typeof subcategorySchema>
+  >({
+    resolver: zodResolver(
+      type === "category" ? categorySchema : subcategorySchema
+    ),
     defaultValues:
       type === "category"
         ? { name: "", description: "", image: "" }
@@ -67,8 +77,11 @@ export function AddCategoryForm({ type, categories }: AddCategoryFormProps) {
       let error
 
       if (type === "category") {
-        const imageUrl = uploadedFiles.length > 0 ? uploadedFiles[uploadedFiles.length - 1].url : "/images/categories/lighting.png";
-        
+        const imageUrl =
+          uploadedFiles.length > 0
+            ? uploadedFiles[uploadedFiles.length - 1].url
+            : "/images/categories/lighting.png"
+
         const res = await addCategory({
           name: values.name,
           description: values.description,
@@ -100,7 +113,10 @@ export function AddCategoryForm({ type, categories }: AddCategoryFormProps) {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 max-w-xl">
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="max-w-xl space-y-4"
+      >
         {type === "subcategory" && (
           <FormField
             control={form.control}
@@ -108,7 +124,10 @@ export function AddCategoryForm({ type, categories }: AddCategoryFormProps) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Parent Category</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value as string}>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value as string}
+                >
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Select a parent category" />
@@ -178,15 +197,26 @@ export function AddCategoryForm({ type, categories }: AddCategoryFormProps) {
             {uploadedFiles.length > 0 && (
               <div className="flex flex-wrap gap-3">
                 {uploadedFiles.map((file, idx) => (
-                  <div key={file.id} className="relative h-24 w-24 rounded-md overflow-hidden border group">
+                  <div
+                    key={file.id}
+                    className="group relative h-24 w-24 overflow-hidden rounded-md border"
+                  >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={file.url} alt={file.name} className="h-full w-full object-cover" />
+                    <img
+                      src={file.url}
+                      alt={file.name}
+                      className="h-full w-full object-cover"
+                    />
                     <Button
                       type="button"
                       variant="destructive"
                       size="icon"
-                      className="absolute top-1 right-1 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
-                      onClick={() => setUploadedFiles(uploadedFiles.filter((_, i) => i !== idx))}
+                      className="absolute right-1 top-1 h-6 w-6 opacity-0 transition-opacity group-hover:opacity-100"
+                      onClick={() =>
+                        setUploadedFiles(
+                          uploadedFiles.filter((_, i) => i !== idx)
+                        )
+                      }
                     >
                       <X className="h-4 w-4" />
                     </Button>

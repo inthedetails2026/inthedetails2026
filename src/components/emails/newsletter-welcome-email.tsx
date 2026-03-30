@@ -54,8 +54,7 @@ export default function NewsletterWelcomeEmail({
   return (
     <Html>
       <Head>
-        <title>Into The Details
- Newsletter</title>
+        <title>Into The Details Newsletter</title>
       </Head>
       <Preview>{previewText}</Preview>
       <Tailwind>
@@ -64,12 +63,10 @@ export default function NewsletterWelcomeEmail({
             <Section className="mt-4">
               <Heading className="text-center text-2xl font-semibold text-zinc-950">
                 Into The Details
-
               </Heading>
               <Hr className="my-4" />
               <Heading className="text-center text-3xl font-semibold text-zinc-800">
-                Welcome to Into The Details
-!
+                Welcome to Into The Details !
               </Heading>
               <Text className="mb-0 mt-6 text-center text-base">
                 {`We're`} so glad {`you're`} here. {`We're`} excited to share
@@ -116,7 +113,7 @@ export default function NewsletterWelcomeEmail({
               </Text>
               <Text className="mb-0 mt-4">
                 @ Into The Details
- {new Date().getFullYear()}
+                {new Date().getFullYear()}
               </Text>
               <Text className="m-0">
                 If you no longer want to receive these emails, you can{" "}

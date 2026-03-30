@@ -40,7 +40,6 @@ export function JoinNewsletterForm() {
           email: data.email,
           token: crypto.randomUUID(),
           subject: "Welcome to Into The Details",
-
         }),
       })
 

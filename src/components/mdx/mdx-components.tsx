@@ -4,14 +4,18 @@ import { cn } from "@/lib/utils"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { AspectRatio } from "@/components/ui/aspect-ratio"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { ContactForm } from "@/components/contact-form"
+import { Icons } from "@/components/icons"
 import { Callout } from "@/components/mdx/callout"
 import { CodeBlock } from "@/components/mdx/code-block"
 import { LinkBadge } from "@/components/mdx/link-badge"
 import { MdxCard } from "@/components/mdx/mdx-card"
 import { MdxImage } from "@/components/mdx/mdx-image"
-import { ContactForm } from "@/components/contact-form"
-import { Icons } from "@/components/icons"
-import { PageHeader, PageHeaderHeading, PageHeaderDescription } from "@/components/page-header"
+import {
+  PageHeader,
+  PageHeaderDescription,
+  PageHeaderHeading,
+} from "@/components/page-header"
 
 /** Originally from `shadcn/ui-docs`
  * @link https://github.com/shadcn/ui/blob/main/apps/www/components/mdx-components.tsx
@@ -20,7 +24,10 @@ import { PageHeader, PageHeaderHeading, PageHeaderDescription } from "@/componen
 const components = {
   h1: ({ className, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => (
     <h1
-      className={cn("mt-2 scroll-m-20 font-heading text-4xl font-bold", className)}
+      className={cn(
+        "mt-2 scroll-m-20 font-heading text-4xl font-bold",
+        className
+      )}
       {...props}
     />
   ),

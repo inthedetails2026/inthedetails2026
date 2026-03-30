@@ -2,8 +2,9 @@
 
 import * as React from "react"
 import Link from "next/link"
-import { Icons } from "@/components/icons"
+
 import { cn } from "@/lib/utils"
+import { Icons } from "@/components/icons"
 
 interface WhatsAppButtonProps extends React.ComponentPropsWithoutRef<"div"> {
   phoneNumber?: string
@@ -42,7 +43,7 @@ export function WhatsAppButton({
   return (
     <div
       className={cn(
-        "fixed bottom-6 right-6 z-50 flex items-center justify-center animate-in fade-in slide-in-from-bottom-4 duration-500",
+        "fixed bottom-6 right-6 z-50 flex items-center justify-center duration-500 animate-in fade-in slide-in-from-bottom-4",
         className
       )}
       {...props}
@@ -55,7 +56,7 @@ export function WhatsAppButton({
         aria-label="Contact on WhatsApp"
       >
         <span className="absolute -top-12 right-0 scale-0 rounded-lg bg-black/80 px-3 py-1 text-xs text-white transition-all group-hover:scale-100">
-           Chat with us
+          Chat with us
         </span>
         <Icons.whatsapp className="size-8" />
       </Link>

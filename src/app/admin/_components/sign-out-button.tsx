@@ -2,8 +2,8 @@
 
 import * as React from "react"
 import { useRouter } from "next/navigation"
-import { LogOut } from "lucide-react"
 import { createBrowserClient } from "@supabase/ssr"
+import { LogOut } from "lucide-react"
 import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"

@@ -115,7 +115,9 @@ export async function getUniqueStoreIds() {
       .from(products)
       .where(inArray(products.id, uniqueProductIds))
 
-    const storeIds = storeIdsRecords.map((item) => item.storeId).filter((id) => id)
+    const storeIds = storeIdsRecords
+      .map((item) => item.storeId)
+      .filter((id) => id)
 
     return storeIds
   } catch (err) {

@@ -1,3 +1,4 @@
+import * as React from "react"
 import {
   Body,
   Container,
@@ -8,12 +9,11 @@ import {
   Img,
   Link,
   Preview,
+  render,
   Section,
   Tailwind,
   Text,
-  render,
 } from "@react-email/components"
-import * as React from "react"
 
 interface OrderConfirmationEmailProps {
   orderId: string
@@ -51,9 +51,9 @@ export default function OrderConfirmationEmail({
               </Heading>
               <Text className="text-zinc-500">Premium Skateboard Shop</Text>
             </Section>
-            
+
             <Hr className="my-8 border-zinc-200" />
-            
+
             <Section>
               <Heading className="text-xl font-semibold">
                 Order Confirmed!
@@ -62,30 +62,37 @@ export default function OrderConfirmationEmail({
                 Hi {customerName},
               </Text>
               <Text className="text-base leading-6">
-                Thank you for your purchase. We've received your order **{orderId}** and are getting it ready for shipment.
+                Thank you for your purchase. We've received your order **
+                {orderId}** and are getting it ready for shipment.
               </Text>
-              <Text className="text-base leading-6 font-medium text-zinc-700 italic">
-                We will be in touch with you as soon as possible for the delivery.
+              <Text className="text-base font-medium italic leading-6 text-zinc-700">
+                We will be in touch with you as soon as possible for the
+                delivery.
               </Text>
             </Section>
 
             <Section className="mt-8">
-              <Heading className="text-lg font-semibold border-b border-zinc-200 pb-2">
+              <Heading className="border-b border-zinc-200 pb-2 text-lg font-semibold">
                 Order Summary
               </Heading>
               {items.map((item, index) => (
-                <div key={index} className="flex justify-between py-4 border-b border-zinc-100 last:border-0 text-sm">
+                <div
+                  key={index}
+                  className="flex justify-between border-b border-zinc-100 py-4 text-sm last:border-0"
+                >
                   <div className="flex-1">
                     <Text className="m-0 font-medium">{item.name}</Text>
-                    <Text className="m-0 text-zinc-500">Quantity: {item.quantity}</Text>
+                    <Text className="m-0 text-zinc-500">
+                      Quantity: {item.quantity}
+                    </Text>
                   </div>
                   <div className="text-right">
                     <Text className="m-0 font-medium">${item.price}</Text>
                   </div>
                 </div>
               ))}
-              
-              <div className="mt-4 flex justify-between font-bold text-lg">
+
+              <div className="mt-4 flex justify-between text-lg font-bold">
                 <Text className="m-0">Total</Text>
                 <Text className="m-0">${totalAmount}</Text>
               </div>
@@ -93,8 +100,12 @@ export default function OrderConfirmationEmail({
 
             <Section className="mt-12 text-center text-zinc-500">
               <Text className="text-sm">
-                If you have any questions about your order, please reply to this email or contact us at{" "}
-                <Link href={`mailto:${process.env.EMAIL_FROM_ADDRESS}`} className="text-blue-600 underline">
+                If you have any questions about your order, please reply to this
+                email or contact us at{" "}
+                <Link
+                  href={`mailto:${process.env.EMAIL_FROM_ADDRESS}`}
+                  className="text-blue-600 underline"
+                >
                   {process.env.EMAIL_FROM_ADDRESS}
                 </Link>
               </Text>

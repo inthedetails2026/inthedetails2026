@@ -1,8 +1,7 @@
 import * as React from "react"
 import Link from "next/link"
-import type { User } from "@supabase/supabase-js"
-
 import { DashboardIcon, ExitIcon, GearIcon } from "@radix-ui/react-icons"
+import type { User } from "@supabase/supabase-js"
 
 import { getStoreByUserId } from "@/lib/queries/store"
 import { cn, getUserEmail } from "@/lib/utils"
@@ -23,8 +22,7 @@ import { Icons } from "@/components/icons"
 import { DropdownSignOut } from "@/components/layouts/dropdown-signout"
 
 interface AuthDropdownProps
-  extends React.ComponentPropsWithRef<typeof DropdownMenuTrigger>,
-    ButtonProps {
+  extends React.ComponentPropsWithRef<typeof DropdownMenuTrigger>, ButtonProps {
   user: User | null
 }
 
@@ -64,28 +62,26 @@ export async function AuthDropdown({
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">
-              {email}
-            </p>
+            <p className="text-sm font-medium leading-none">{email}</p>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         {email === "inthedetails2026@gmail.com" && (
           <DropdownMenuGroup>
-          <DropdownMenuItem asChild>
-            <Link href="/admin">
-              <DashboardIcon className="mr-2 size-4" aria-hidden="true" />
-              Admin Dashboard
-              <DropdownMenuShortcut>⌘D</DropdownMenuShortcut>
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Link href="/admin/settings">
-              <GearIcon className="mr-2 size-4" aria-hidden="true" />
-              Settings
-              <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
-            </Link>
-          </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link href="/admin">
+                <DashboardIcon className="mr-2 size-4" aria-hidden="true" />
+                Admin Dashboard
+                <DropdownMenuShortcut>⌘D</DropdownMenuShortcut>
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link href="/admin/settings">
+                <GearIcon className="mr-2 size-4" aria-hidden="true" />
+                Settings
+                <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
+              </Link>
+            </DropdownMenuItem>
           </DropdownMenuGroup>
         )}
         <DropdownMenuSeparator />
@@ -99,12 +95,6 @@ export async function AuthDropdown({
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownSignOut />
-
-
-
-
-
-
       </DropdownMenuContent>
     </DropdownMenu>
   )

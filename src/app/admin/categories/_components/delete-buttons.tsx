@@ -35,7 +35,9 @@ export function DeleteCategoryButton({ id, type }: DeleteCategoryButtonProps) {
           if (error) {
             toast.error(error)
           } else {
-            toast.success(`${type === "category" ? "Category" : "Subcategory"} deleted`)
+            toast.success(
+              `${type === "category" ? "Category" : "Subcategory"} deleted`
+            )
           }
         })
       }}
