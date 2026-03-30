@@ -44,15 +44,18 @@ export function useUploadFile(
         return {
           id: file.key,
           name: file.name,
-          url: file.url,
+          url: (file as any).ufsUrl ?? file.url,
         }
       })
 
       setUploadedFiles((prev) =>
         prev ? [...prev, ...formattedRes] : formattedRes
       )
+
+      return formattedRes
     } catch (err) {
       toast.error(getErrorMessage(err))
+      return []
     } finally {
       setProgresses({})
       setIsUploading(false)
@@ -61,6 +64,7 @@ export function useUploadFile(
 
   return {
     uploadedFiles,
+    setUploadedFiles,
     progresses,
     uploadFiles: uploadThings,
     isUploading,

@@ -25,8 +25,8 @@ export function MainNav({ items }: MainNavProps) {
   return (
     <div className="hidden gap-6 lg:flex">
       <Link href="/" className="hidden items-center space-x-2 lg:flex">
-        <Icons.logo className="size-7" aria-hidden="true" />
-        <span className="hidden font-bold lg:inline-block">
+        <Icons.logo className="size-16" aria-hidden="true" />
+        <span className="hidden font-heading font-bold lg:inline-block">
           {siteConfig.name}
         </span>
         <span className="sr-only">Home</span>

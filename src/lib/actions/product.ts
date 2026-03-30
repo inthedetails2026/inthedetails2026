@@ -1,6 +1,6 @@
 "use server"
 
-import { unstable_noStore as noStore, revalidatePath } from "next/cache"
+import { unstable_noStore as noStore, revalidatePath, revalidateTag } from "next/cache"
 import { db } from "@/db"
 import { products } from "@/db/schema"
 import type { StoredFile } from "@/types"
@@ -31,18 +31,18 @@ export async function filterProducts({ query }: { query: string }) {
       },
       with: {
         products: {
+          where: (table, { sql }) =>
+            sql`lower(${table.name}) LIKE ${"%" + query.toLowerCase() + "%"}`,
           columns: {
             id: true,
             name: true,
           },
         },
       },
-      // This doesn't do anything
-      where: (table, { sql }) => sql`position(${query} in ${table.name}) > 0`,
     })
 
     return {
-      data: categoriesWithProducts,
+      data: categoriesWithProducts.filter((c) => c.products.length > 0),
       error: null,
     }
   } catch (err) {
@@ -73,11 +73,12 @@ export async function addProduct(
 
     await db.insert(products).values({
       ...input,
-      images: JSON.stringify(input.images) as unknown as StoredFile[],
+      images: input.images,
     })
 
-    revalidatePath(`/dashboard/stores/${input.storeId}/products.`)
-
+    revalidatePath("/admin/products")
+    revalidatePath("/")
+    revalidateTag("featured-products")
     return {
       data: null,
       error: null,
@@ -91,7 +92,11 @@ export async function addProduct(
 }
 
 export async function updateProduct(
-  input: z.infer<typeof createProductSchema> & { id: string; storeId: string }
+  input: Omit<z.infer<typeof createProductSchema>, "images"> & {
+    id: string
+    storeId: string
+    images: StoredFile[]
+  }
 ) {
   try {
     const product = await db.query.products.findFirst({
@@ -109,12 +114,14 @@ export async function updateProduct(
       .update(products)
       .set({
         ...input,
-        images: JSON.stringify(input.images) as unknown as StoredFile[],
+        images: input.images,
       })
       .where(eq(products.id, input.id))
 
-    revalidatePath(`/dashboard/stores/${input.storeId}/products/${input.id}`)
-
+    revalidatePath(`/admin/products/${input.id}`)
+    revalidatePath("/admin/products")
+    revalidatePath("/")
+    revalidateTag("featured-products")
     return {
       data: null,
       error: null,
@@ -180,8 +187,9 @@ export async function deleteProduct(input: { id: string; storeId: string }) {
 
     await db.delete(products).where(eq(products.id, input.id))
 
-    revalidatePath(`/dashboard/stores/${input.storeId}/products`)
-
+    revalidatePath("/admin/products")
+    revalidatePath("/")
+    revalidateTag("featured-products")
     return {
       data: null,
       error: null,

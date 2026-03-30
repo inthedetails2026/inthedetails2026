@@ -14,7 +14,7 @@ import { cn } from "@/lib/utils"
 
 interface CheckoutShellProps
   extends React.PropsWithChildren<React.HTMLAttributes<HTMLDivElement>> {
-  storeStripeAccountId: string
+  storeStripeAccountId?: string | null
   paymentIntentPromise: Promise<{
     data: {
       clientSecret: string | null
@@ -25,13 +25,13 @@ interface CheckoutShellProps
 
 export function CheckoutShell({
   children,
-  storeStripeAccountId,
+  storeStripeAccountId = null,
   paymentIntentPromise,
   className,
   ...props
 }: CheckoutShellProps) {
   const stripePromise = React.useMemo(
-    () => getStripe(storeStripeAccountId),
+    () => getStripe(storeStripeAccountId ?? undefined),
     [storeStripeAccountId]
   )
 
@@ -42,8 +42,13 @@ export function CheckoutShell({
 
   if (!data?.clientSecret || error) {
     return (
-      <section className={cn("size-full", className)} {...props}>
-        <div className="size-full bg-white" />
+      <section className={cn("flex size-full flex-col items-center justify-center space-y-4 bg-white p-6 text-center", className)} {...props}>
+        <div className="flex flex-col items-center gap-2">
+           <div className="text-xl font-bold text-red-600">Checkout Error</div>
+           <p className="text-muted-foreground max-w-sm">
+             {error ?? "No payment session found. Please try refreshing your cart or adding items."}
+           </p>
+        </div>
       </section>
     )
   }

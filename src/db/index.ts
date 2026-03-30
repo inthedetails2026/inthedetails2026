@@ -4,5 +4,13 @@ import postgres from "postgres"
 
 import * as schema from "./schema"
 
-const client = postgres(env.DATABASE_URL)
+const connectionString = env.DATABASE_URL
+
+declare global {
+  var postgresClient: postgres.Sql | undefined
+}
+
+export const client = globalThis.postgresClient || postgres(connectionString, { prepare: false })
+if (env.NODE_ENV !== "production") globalThis.postgresClient = client
+
 export const db = drizzle(client, { schema })

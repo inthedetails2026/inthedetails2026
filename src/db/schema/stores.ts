@@ -1,6 +1,7 @@
 import { relations } from "drizzle-orm"
 import {
   boolean,
+  decimal,
   integer,
   pgEnum,
   pgTable,
@@ -34,9 +35,17 @@ export const stores = pgTable("stores", {
   cancelPlanAtEnd: boolean("cancel_plan_at_end").default(false),
   stripeAccountId: varchar("stripe_account_id").unique(), // stripe connect
   stripeCustomerId: varchar("stripe_customer_id").unique(),
+  processingFeePercent: decimal("processing_fee_percent", {
+    precision: 5,
+    scale: 2,
+  })
+    .notNull()
+    .default("2.9"),
+  processingFeeFixed: integer("processing_fee_fixed").notNull().default(30), // in cents
   productLimit: integer("product_limit").notNull().default(10),
   tagLimit: integer("tag_limit").notNull().default(5),
   variantLimit: integer("variant_limit").notNull().default(5),
+  deliveryFee: integer("delivery_fee").notNull().default(0), // in cents
   ...lifecycleDates,
 })
 

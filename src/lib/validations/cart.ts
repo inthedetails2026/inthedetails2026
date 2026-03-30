@@ -31,6 +31,7 @@ export const cartLineItemSchema = z.object({
   storeId: z.string(),
   storeName: z.string().optional().nullable(),
   storeStripeAccountId: z.string().optional().nullable(),
+  deliveryFee: z.number().optional().nullable(),
 })
 
 export const deleteCartItemSchema = z.object({

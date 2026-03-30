@@ -4,18 +4,20 @@ import { cache } from "react"
 import { unstable_noStore as noStore } from "next/cache"
 import { db } from "@/db"
 import { products, stores } from "@/db/schema"
-import { currentUser } from "@clerk/nextjs/server"
+import { createClient } from "@/lib/supabase/server"
 import { count, countDistinct, eq } from "drizzle-orm"
 
 import { getPlan } from "@/lib/actions/stripe"
 import { getPlanLimits } from "@/lib/subscription"
 
-/**
- * Cache is used with a data-fetching function like fetch to share a data snapshot between components.
- * It ensures a single request is made for multiple identical data fetches, with the returned data cached and shared across components during the server render.
- * @see https://react.dev/reference/react/cache#reference
- */
-export const getCachedUser = cache(currentUser)
+const getSupabaseUser = async () => {
+  const supabase = createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  return user
+}
+
+export const getCachedUser = cache(getSupabaseUser)
+
 
 export async function getUserUsageMetrics(input: { userId: string }) {
   noStore()

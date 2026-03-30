@@ -2,15 +2,15 @@ import type { Metadata } from "next"
 import { env } from "@/env.js"
 import type { SearchParams } from "@/types"
 
-import { getProducts } from "@/lib/queries/product"
-import { toTitleCase } from "@/lib/utils"
-import { AlertCard } from "@/components/alert-card"
+import { getProducts, getCategoryBySlug, getSubcategoriesByCategory } from "@/lib/queries/product"
+import { slugify, toTitleCase } from "@/lib/utils"
 import {
   PageHeader,
   PageHeaderDescription,
   PageHeaderHeading,
 } from "@/components/page-header"
 import { Shell } from "@/components/shell"
+import { Products } from "@/components/products"
 
 interface CategoryPageProps {
   params: {
@@ -31,19 +31,33 @@ export default async function CategoryPage({
   params,
   searchParams,
 }: CategoryPageProps) {
-  const category = decodeURIComponent(params.category)
+  const categorySlug = slugify(params.category)
 
-  const productsTransaction = await getProducts(searchParams)
+  const categoryData = await getCategoryBySlug({ slug: categorySlug })
+  
+  const productsTransaction = await getProducts({
+    ...searchParams,
+    categories: categoryData?.id,
+  })
+
+  const subcategories = categoryData 
+    ? await getSubcategoriesByCategory({ categoryId: categoryData.id })
+    : []
 
   return (
     <Shell>
       <PageHeader>
-        <PageHeaderHeading size="sm">{toTitleCase(category)}</PageHeaderHeading>
+        <PageHeaderHeading size="sm">{toTitleCase(categorySlug)}</PageHeaderHeading>
         <PageHeaderDescription size="sm">
-          {`Buy ${category} from the best stores`}
+          {`Explore our ${categorySlug} collection`}
         </PageHeaderDescription>
       </PageHeader>
-      <AlertCard />
+      <Products
+        products={productsTransaction.data}
+        pageCount={productsTransaction.pageCount}
+        category={categoryData}
+        subcategories={subcategories}
+      />
     </Shell>
   )
 }

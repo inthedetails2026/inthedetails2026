@@ -1,9 +1,9 @@
 import type { Metadata } from "next"
 import { env } from "@/env.js"
 
-import { getProducts } from "@/lib/queries/product"
+import { getProducts, getCategoryBySlug, getSubcategoriesByCategory } from "@/lib/queries/product"
 import { getStores } from "@/lib/queries/store"
-import { toTitleCase, unslugify } from "@/lib/utils"
+import { slugify, toTitleCase, unslugify } from "@/lib/utils"
 import { productsSearchParamsSchema } from "@/lib/validations/params"
 import {
   PageHeader,
@@ -38,23 +38,21 @@ export default async function SubcategoryPage({
   searchParams,
 }: SubcategoryPageProps) {
   const { category, subcategory } = params
-  const { page, per_page, sort, price_range, store_ids, store_page, active } =
-    productsSearchParamsSchema.parse(searchParams)
+  
+  const categorySlug = slugify(category)
+  const subcategorySlug = slugify(subcategory)
 
-  // Products transaction
-  const limit = typeof per_page === "string" ? parseInt(per_page) : 8
-  const offset = typeof page === "string" ? (parseInt(page) - 1) * limit : 0
+  const categoryData = await getCategoryBySlug({ slug: categorySlug })
 
-  const productsTransaction = await getProducts(searchParams)
+  const productsTransaction = await getProducts({
+    ...searchParams,
+    categories: categoryData?.id,
+    subcategory: subcategorySlug,
+  })
 
-  // Stores transaction
-  const storesLimit = 25
-  const storesOffset =
-    typeof store_page === "string"
-      ? (parseInt(store_page) - 1) * storesLimit
-      : 0
-
-  const storesTransaction = await getStores(searchParams)
+  const subcategories = categoryData
+    ? await getSubcategoriesByCategory({ categoryId: categoryData.id })
+    : []
 
   return (
     <Shell>
@@ -63,15 +61,15 @@ export default async function SubcategoryPage({
           {toTitleCase(unslugify(subcategory))}
         </PageHeaderHeading>
         <PageHeaderDescription size="sm">
-          {`Buy the best ${unslugify(subcategory)}`}
+          {`Explore our ${unslugify(subcategory)} collection`}
         </PageHeaderDescription>
       </PageHeader>
-      {/* <Products
+      <Products
         products={productsTransaction.data}
         pageCount={productsTransaction.pageCount}
-        stores={storesTransaction.data}
-        storePageCount={storesTransaction.pageCount}
-      /> */}
+        category={categoryData}
+        subcategories={subcategories}
+      />
     </Shell>
   )
 }

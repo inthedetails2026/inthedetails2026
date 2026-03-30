@@ -154,7 +154,7 @@ export default {
       },
       /* */
       fontFamily: {
-        sans: ["var(--font-geist-sans)", ...fontFamily.sans],
+        sans: ["var(--font-sans)", ...fontFamily.sans],
         mono: ["var(--font-geist-mono)", ...fontFamily.mono],
         heading: ["var(--font-heading)", ...fontFamily.sans],
       },

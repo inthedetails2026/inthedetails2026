@@ -7,6 +7,11 @@ export async function GET() {
   }
 
   revalidatePath("/")
+  revalidatePath("/admin/products")
+  import("next/cache").then(({ revalidateTag }) => {
+    revalidateTag("featured-products")
+    revalidateTag("categories-v2")
+  })
 
   return new Response("revalidated everything", { status: 200 })
 }

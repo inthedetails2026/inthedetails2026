@@ -12,18 +12,61 @@ export const Icons = {
   logo: (props: IconProps) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      strokeWidth="1.5"
-      stroke="currentColor"
-      fill="none"
-      strokeLinecap="round"
-      strokeLinejoin="round"
+      viewBox="0 0 100 100"
       {...props}
     >
-      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-      <circle cx="7" cy="15" r="2" />
-      <circle cx="17" cy="15" r="2" />
-      <path d="M3 9a2 1 0 0 0 2 1h14a2 1 0 0 0 2 -1" />
+      {/* Background Yellow Circle */}
+      <circle cx="50" cy="50" r="49" fill="#FDC101" />
+      
+      {/* Hand-drawn style illustration - BOLDER */}
+      {/* Potted Plant */}
+      <path
+        d="M25 50 c-2 -5 5 -10 10 -8 m-10 8 c2 5 -5 10 -10 8"
+        fill="#C14412"
+        stroke="#1A1A1A"
+        strokeWidth="3"
+        strokeLinecap="round"
+      />
+      <path
+        d="M25 50 Q 25 35 30 30 M 25 50 Q 15 35 10 30"
+        stroke="#1A1A1A"
+        strokeWidth="3.5"
+        fill="none"
+        strokeLinecap="round"
+      />
+      
+      {/* The Armchair */}
+      <path
+        d="M38 55 Q 50 40 62 55 L 65 75 Q 50 85 35 75 Z"
+        fill="#A8C5C8"
+        stroke="#1A1A1A"
+        strokeWidth="3.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M38 55 Q 30 55 32 65 M 62 55 Q 70 55 68 65"
+        stroke="#1A1A1A"
+        strokeWidth="3.5"
+        fill="none"
+        strokeLinecap="round"
+      />
+      
+      {/* Floor Lamp */}
+      <path
+        d="M75 80 L 75 40 M 75 40 L 60 25"
+        stroke="#1A1A1A"
+        strokeWidth="3"
+        fill="none"
+        strokeLinecap="round"
+      />
+      <path
+        d="M60 25 L 53 38 L 67 38 Z"
+        fill="#FFD700"
+        stroke="#1A1A1A"
+        strokeWidth="3"
+        strokeLinejoin="round"
+      />
     </svg>
   ),
   menu: ({ ...props }: IconProps) => (
@@ -327,4 +370,18 @@ export const Icons = {
   placeholder: ImageIcon,
   settings: GearIcon,
   chevronLeft: ChevronLeftIcon,
+  whatsapp: (props: IconProps) => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      {...props}
+    >
+      <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 1 1-7.6-11.7 8.38 8.38 0 0 1 3.8.9L22 2l-2.6 5.6Z" />
+    </svg>
+  ),
 }

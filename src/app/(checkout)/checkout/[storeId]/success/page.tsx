@@ -7,8 +7,13 @@ import { eq } from "drizzle-orm"
 
 import { getOrderLineItems } from "@/lib/actions/order"
 import { getPaymentIntent } from "@/lib/actions/stripe"
+import { saveOrder } from "@/lib/actions/save-order"
 import { cn, formatPrice } from "@/lib/utils"
+import { CartReset } from "@/components/checkout/cart-reset"
 import { buttonVariants } from "@/components/ui/button"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { Separator } from "@/components/ui/separator"
+import { WhatsAppButton } from "@/components/whatsapp-button"
 import { CartLineItems } from "@/components/checkout/cart-line-items"
 import { VerifyOderForm } from "@/components/checkout/verify-order-form"
 import {
@@ -58,6 +63,12 @@ export default async function OrderSuccessPage({
       typeof delivery_postal_code === "string" ? delivery_postal_code : "",
   })
 
+  // DIRECT ORDER SAVE: This runs immediately when payment is verified.
+  // It fetches from Stripe directly and saves to Supabase - no complex logic.
+  if (isVerified && typeof payment_intent === "string") {
+    await saveOrder(payment_intent)
+  }
+
   const lineItems =
     isVerified && paymentIntent
       ? await getOrderLineItems({
@@ -71,50 +82,67 @@ export default async function OrderSuccessPage({
     <div className="flex size-full max-h-dvh flex-col gap-10 overflow-hidden pb-8 pt-6 md:py-8">
       {isVerified ? (
         <div className="grid gap-10 overflow-auto">
+          <CartReset />
           <PageHeader
             id="order-success-page-header"
             aria-labelledby="order-success-page-header-heading"
             className="container flex max-w-7xl flex-col"
           >
-            <PageHeaderHeading>Thank you for your order</PageHeaderHeading>
+            <PageHeaderHeading>Order Complete!</PageHeaderHeading>
             <PageHeaderDescription>
-              {store?.name ?? "Store"} will be in touch with you shortly
+              Order ID: <span className="text-foreground font-mono font-medium">{paymentIntent?.id}</span>
             </PageHeaderDescription>
           </PageHeader>
-          <section
-            id="order-success-cart-line-items"
-            aria-labelledby="order-success-cart-line-items-heading"
-            className="flex flex-col space-y-6 overflow-auto"
-          >
-            <CartLineItems
-              items={lineItems}
-              isEditable={false}
-              className="container max-w-7xl"
-            />
-            <div className="container flex w-full max-w-7xl items-center">
-              <span className="flex-1">
-                Total (
-                {lineItems.reduce(
-                  (acc, item) => acc + Number(item.quantity),
-                  0
-                )}
-                )
-              </span>
-              <span>
-                {formatPrice(
-                  lineItems.reduce(
-                    (acc, item) =>
-                      acc + Number(item.price) * Number(item.quantity),
-                    0
-                  )
-                )}
-              </span>
+
+          <section className="container max-w-7xl grid gap-6">
+            <div className="rounded-lg border bg-card p-6 shadow-sm">
+              <h3 className="text-lg font-semibold mb-4">Delivery Information</h3>
+              <div className="grid gap-2 text-sm text-muted-foreground">
+                <p><span className="font-medium text-foreground">Customer:</span> {paymentIntent?.shipping?.name}</p>
+                <p><span className="font-medium text-foreground">Address:</span> {paymentIntent?.shipping?.address?.line1}, {paymentIntent?.shipping?.address?.city}, {paymentIntent?.shipping?.address?.country}</p>
+                {paymentIntent?.shipping?.address?.line2 && <p>{paymentIntent?.shipping?.address?.line2}</p>}
+                {paymentIntent?.shipping?.phone && <p><span className="font-medium text-foreground">Phone:</span> {paymentIntent?.shipping?.phone}</p>}
+                <p className="mt-2 font-medium text-primary italic">"We will be in touch with you as soon as possible for the delivery"</p>
+              </div>
+              <div className="mt-6 flex flex-col gap-4">
+                <p className="text-sm font-medium">Need help with your delivery?</p>
+                <WhatsAppButton 
+                  variant="inline" 
+                  message={`Hi! I just placed an order (ID: ${paymentIntent?.id}) at In the Details shop and would like to follow up. How can you help me today?`}
+                  className="w-fit"
+                />
+              </div>
+            </div>
+
+            <Separator />
+
+            <div className="flex flex-col space-y-4">
+              <h3 className="text-lg font-semibold text-center md:text-left">Order Summary</h3>
+              <CartLineItems
+                items={lineItems}
+                isEditable={false}
+                className="w-full"
+              />
+              <div className="flex w-full items-center font-bold text-lg pt-4">
+                <span className="flex-1 text-muted-foreground font-medium">
+                  Total ({lineItems.reduce((acc, item) => acc + Number(item.quantity), 0)} items)
+                </span>
+                <span>
+                  {formatPrice(
+                    lineItems.reduce(
+                      (acc, item) => acc + Number(item.price) * Number(item.quantity),
+                      0
+                    )
+                  )}
+                </span>
+              </div>
             </div>
           </section>
+
           <section
             id="order-success-actions"
             aria-labelledby="order-success-actions-heading"
-            className="container flex max-w-7xl items-center justify-center space-x-2.5"
+            className="container flex max-w-7xl items-center justify-center space-x-2.5 pb-10"
           >
             <Link
               aria-label="Continue shopping"
@@ -145,20 +173,12 @@ export default async function OrderSuccessPage({
         </div>
       ) : (
         <div className="container grid max-w-7xl gap-10">
-          <PageHeader
-            id="order-success-page-header"
-            aria-labelledby="order-success-page-header-heading"
-          >
-            <PageHeaderHeading>Thank you for your order</PageHeaderHeading>
+          <PageHeader>
+            <PageHeaderHeading>Order Processing</PageHeaderHeading>
             <PageHeaderDescription>
-              Please enter your delivery postal code to verify your order
+              We are verifying your order details.
             </PageHeaderDescription>
           </PageHeader>
-          <VerifyOderForm
-            id="order-success-verify-order-form"
-            aria-labelledby="order-success-verify-order-form-heading"
-            className="mx-auto w-full max-w-md pt-40"
-          />
         </div>
       )}
     </div>

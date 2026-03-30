@@ -53,18 +53,40 @@ export async function CheckoutCard({ storeId }: CheckoutCardProps) {
         <CartLineItems items={cartLineItems} className="max-h-[280px]" />
       </CardContent>
       <Separator className="mb-4" />
-      <CardFooter className="space-x-4">
-        <span className="flex-1">
-          Total ({cartLineItems.reduce((acc, item) => acc + item.quantity, 0)})
-        </span>
-        <span>
-          {formatPrice(
-            cartLineItems.reduce(
-              (acc, item) => acc + Number(item.price) * item.quantity,
-              0
-            )
-          )}
-        </span>
+      <CardFooter className="flex flex-col items-stretch space-y-2">
+        <div className="flex w-full items-center">
+          <span className="flex-1">
+            Subtotal ({cartLineItems.reduce((acc, item) => acc + item.quantity, 0)})
+          </span>
+          <span>
+            {formatPrice(
+              cartLineItems.reduce(
+                (acc, item) => acc + Number(item.price) * item.quantity,
+                0
+              )
+            )}
+          </span>
+        </div>
+        <div className="flex w-full items-center text-sm text-muted-foreground">
+          <span className="flex-1 italic">Delivery Fee</span>
+          <span>
+            {cartLineItems[0]?.deliveryFee && cartLineItems[0].deliveryFee > 0
+              ? formatPrice(cartLineItems[0].deliveryFee / 100)
+              : "Free"}
+          </span>
+        </div>
+        <Separator className="my-2" />
+        <div className="flex w-full items-center font-bold text-lg">
+          <span className="flex-1">Total</span>
+          <span>
+            {formatPrice(
+              cartLineItems.reduce(
+                (acc, item) => acc + Number(item.price) * item.quantity,
+                0
+              ) + ((cartLineItems[0]?.deliveryFee ?? 0) / 100)
+            )}
+          </span>
+        </div>
       </CardFooter>
     </Card>
   )

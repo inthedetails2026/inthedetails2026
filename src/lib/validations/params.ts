@@ -17,7 +17,7 @@ export const productsSearchParamsSchema = searchParamsSchema
     price_range: z.string().optional(),
     store_ids: z.string().optional(),
     store_page: z.coerce.number().default(1),
-    active: z.string().optional().default("true"),
+    active: z.string().optional().default("false"),
   })
 
 export const storesProductsSearchParamsSchema = searchParamsSchema.extend({

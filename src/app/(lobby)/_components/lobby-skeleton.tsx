@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { siteConfig } from "@/config/site"
 
 import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
@@ -29,27 +30,20 @@ export function LobbySkeleton() {
           className="animate-fade-up"
           style={{ animationDelay: "0.20s", animationFillMode: "both" }}
         >
-          Foundation for your commerce platform
+          {siteConfig.name}
         </PageHeaderHeading>
         <PageHeaderDescription
           className="max-w-[46.875rem] animate-fade-up"
           style={{ animationDelay: "0.30s", animationFillMode: "both" }}
         >
-          Skateshop is an open-source platform for building and customizing your
-          own commerce platform with ease.
+          Where unique design meets everyday living.
         </PageHeaderDescription>
         <PageActions
           className="animate-fade-up"
           style={{ animationDelay: "0.40s", animationFillMode: "both" }}
         >
           <Link href="/products" className={cn(buttonVariants())}>
-            Buy now
-          </Link>
-          <Link
-            href="/dashboard/stores"
-            className={cn(buttonVariants({ variant: "outline" }))}
-          >
-            Sell now
+            Shop now
           </Link>
         </PageActions>
       </PageHeader>
@@ -60,7 +54,7 @@ export function LobbySkeleton() {
       </section>
       <ContentSection
         title="Featured products"
-        description="Explore products from around the world"
+        description="Handpicked pieces for a more beautiful home"
         href="/products"
         linkText="View all products"
         className="pt-14 md:pt-20 lg:pt-24"
@@ -69,17 +63,7 @@ export function LobbySkeleton() {
           <ProductCardSkeleton key={i} />
         ))}
       </ContentSection>
-      <ContentSection
-        title="Featured stores"
-        description="Explore stores from around the world"
-        href="/stores"
-        linkText="View all stores"
-        className="py-14 md:py-20 lg:py-24"
-      >
-        {Array.from({ length: 4 }).map((_, i) => (
-          <StoreCardSkeleton key={i} />
-        ))}
-      </ContentSection>
     </Shell>
   )
 }
+

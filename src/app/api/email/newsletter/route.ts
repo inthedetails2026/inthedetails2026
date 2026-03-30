@@ -1,13 +1,14 @@
 import { db } from "@/db"
 import { notifications } from "@/db/schema"
 import { env } from "@/env.js"
-import { currentUser } from "@clerk/nextjs/server"
 import { eq } from "drizzle-orm"
 import { z } from "zod"
 
 import { resend } from "@/lib/resend"
 import { joinNewsletterSchema } from "@/lib/validations/notification"
 import NewsletterWelcomeEmail from "@/components/emails/newsletter-welcome-email"
+import { createClient } from "@/lib/supabase/server"
+
 
 export async function POST(req: Request) {
   const input = joinNewsletterSchema.parse(await req.json())
@@ -31,16 +32,18 @@ export async function POST(req: Request) {
       })
     }
 
-    const user = await currentUser()
+    const supabase = createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
 
     await Promise.all([
       resend.emails.send({
-        from: env.EMAIL_FROM_ADDRESS,
+        from: env.EMAIL_NOREPLY_ADDRESS,
         to: input.email,
-        subject: input.subject ?? "Welcome to TrendsAI",
+        subject: input.subject ?? "Welcome to Into The Details",
         react: NewsletterWelcomeEmail({
-          firstName: user?.firstName ?? "",
-          fromEmail: env.EMAIL_FROM_ADDRESS,
+          firstName: user?.user_metadata?.full_name?.split(" ")[0] ?? "User",
+          fromEmail: env.EMAIL_NOREPLY_ADDRESS,
           token: notification?.token ?? input.token,
         }),
       }),

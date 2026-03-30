@@ -9,7 +9,9 @@ import { toast } from "sonner"
 
 import { addToCart } from "@/lib/actions/cart"
 import { cn, formatPrice } from "@/lib/utils"
+import { safeParseImages } from "@/lib/images"
 import { AspectRatio } from "@/components/ui/aspect-ratio"
+import { Badge } from "@/components/ui/badge"
 import { Button, buttonVariants } from "@/components/ui/button"
 import {
   Card,
@@ -40,6 +42,7 @@ export function ProductCard({
   ...props
 }: ProductCardProps) {
   const [isUpdatePending, startUpdateTransition] = React.useTransition()
+  const images = safeParseImages(product.images) ?? []
 
   return (
     <Card
@@ -49,12 +52,10 @@ export function ProductCard({
       <Link aria-label={product.name} href={`/product/${product.id}`}>
         <CardHeader className="border-b p-0">
           <AspectRatio ratio={4 / 3}>
-            {product.images?.length ? (
+            {images.length ? (
               <Image
-                src={
-                  product.images[0]?.url ?? "/images/product-placeholder.webp"
-                }
-                alt={product.images[0]?.name ?? product.name}
+                src={images[0]?.url ?? "/images/product-placeholder.webp"}
+                alt={images[0]?.name ?? product.name}
                 className="object-cover"
                 sizes="(min-width: 1024px) 20vw, (min-width: 768px) 25vw, (min-width: 640px) 33vw, (min-width: 475px) 50vw, 100vw"
                 fill
@@ -69,7 +70,14 @@ export function ProductCard({
       </Link>
       <Link href={`/product/${product.id}`} tabIndex={-1}>
         <CardContent className="space-y-1.5 p-4">
-          <CardTitle className="line-clamp-1">{product.name}</CardTitle>
+          <div className="flex items-center justify-between gap-4">
+            <CardTitle className="line-clamp-1 flex-1">{product.name}</CardTitle>
+            {product.category && (
+              <Badge variant="secondary" className="px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-secondary/30 border-secondary/10 hover:bg-secondary/40 h-fit">
+                {product.category}
+              </Badge>
+            )}
+          </div>
           <CardDescription className="line-clamp-1">
             {formatPrice(product.price)}
           </CardDescription>

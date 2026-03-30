@@ -1,7 +1,7 @@
-import { currentUser } from "@clerk/nextjs/server"
 import { createUploadthing, type FileRouter } from "uploadthing/next"
 import { UploadThingError } from "uploadthing/server"
 
+import { createClient } from "@/lib/supabase/server"
 import { ratelimit } from "@/lib/rate-limit"
 
 const f = createUploadthing()
@@ -15,7 +15,8 @@ export const ourFileRouter = {
       // This code runs on your server before upload
 
       // Rate limit the upload
-      const ip = req.ip ?? "127.0.0.1"
+      const ip =
+        (req.headers.get("x-forwarded-for") ?? "127.0.0.1").split(",")[0]?.trim() ?? "127.0.0.1"
 
       const { success } = await ratelimit.limit(ip)
 
@@ -23,7 +24,10 @@ export const ourFileRouter = {
         throw new UploadThingError("Rate limit exceeded")
       }
 
-      const user = await currentUser()
+      const supabase = createClient()
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
 
       // If you throw, the user will not be able to upload
       if (!user) throw new UploadThingError("Unauthorized")
@@ -34,7 +38,6 @@ export const ourFileRouter = {
     .onUploadComplete(async ({ metadata, file }) => {
       // This code RUNS ON YOUR SERVER after upload
       console.log("Upload complete for userId:", metadata.userId)
-
       console.log("file url", file.url)
 
       // !!! Whatever is returned here is sent to the clientside `onClientUploadComplete` callback

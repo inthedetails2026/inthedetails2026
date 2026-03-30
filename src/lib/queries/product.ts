@@ -29,15 +29,14 @@ export async function getFeaturedProducts() {
           category: categories.name,
           price: products.price,
           inventory: products.inventory,
-          stripeAccountId: stores.stripeAccountId,
         })
         .from(products)
         .limit(8)
         .leftJoin(stores, eq(products.storeId, stores.id))
         .leftJoin(categories, eq(products.categoryId, categories.id))
-        .groupBy(products.id, stores.stripeAccountId, categories.name)
+        .groupBy(products.id, categories.name)
         .orderBy(
-          desc(count(stores.stripeAccountId)),
+
           desc(count(products.images)),
           desc(products.createdAt)
         )
@@ -64,13 +63,17 @@ export async function getProducts(input: SearchParams) {
       keyof Product | undefined,
       "asc" | "desc" | undefined,
     ]) ?? ["createdAt", "desc"]
-    const [minPrice, maxPrice] = search.price_range?.split("-") ?? []
-    const categoryIds = search.categories?.split(".") ?? []
-    const subcategoryIds = search.subcategories?.split(".") ?? []
-    const storeIds = search.store_ids?.split(".") ?? []
+    const [minPrice, maxPrice] = (Array.isArray(search.price_range) ? search.price_range[0] : search.price_range)?.split("-") ?? []
+    const categoriesParam = (Array.isArray(search.categories) ? search.categories[0] : search.categories)?.split(".") ?? []
+    const subcategoriesParam = (Array.isArray(search.subcategories) ? search.subcategories[0] : search.subcategories)?.split(".") ?? []
+    const storeIds = (Array.isArray(search.store_ids) ? search.store_ids[0] : search.store_ids)?.split(".") ?? []
+    const activeParam = Array.isArray(search.active) ? search.active[0] : search.active
+    const active = activeParam === "true"
 
-    const transaction = await db.transaction(async (tx) => {
-      const data = await tx
+    const navbarSubcategorySlug = Array.isArray(search.subcategory) ? search.subcategory[0] : search.subcategory
+
+    const [data, total] = await Promise.all([
+      db
         .select({
           id: products.id,
           name: products.name,
@@ -84,7 +87,6 @@ export async function getProducts(input: SearchParams) {
           storeId: products.storeId,
           createdAt: products.createdAt,
           updatedAt: products.updatedAt,
-          stripeAccountId: stores.stripeAccountId,
         })
         .from(products)
         .limit(limit)
@@ -94,41 +96,46 @@ export async function getProducts(input: SearchParams) {
         .leftJoin(subcategories, eq(products.subcategoryId, subcategories.id))
         .where(
           and(
-            categoryIds.length > 0
-              ? inArray(products.categoryId, categoryIds)
+            categoriesParam.length > 0
+              ? inArray(products.categoryId, categoriesParam)
               : undefined,
-            subcategoryIds.length > 0
-              ? inArray(products.subcategoryId, subcategoryIds)
+            subcategoriesParam.length > 0
+              ? inArray(products.subcategoryId, subcategoriesParam)
+              : undefined,
+            navbarSubcategorySlug
+              ? sql`lower(${subcategories.slug}) LIKE ${"%" + navbarSubcategorySlug.toLowerCase().replace(/s$/, "") + "%"}`
               : undefined,
             minPrice ? gte(products.price, minPrice) : undefined,
             maxPrice ? lte(products.price, maxPrice) : undefined,
             storeIds.length ? inArray(products.storeId, storeIds) : undefined,
-            input.active === "true"
+            active === true
               ? sql`(${stores.stripeAccountId}) is not null`
               : undefined
           )
         )
-        .groupBy(products.id)
         .orderBy(
           column && column in products
             ? order === "asc"
               ? asc(products[column])
               : desc(products[column])
             : desc(products.createdAt)
-        )
-
-      const total = await tx
+        ),
+      db
         .select({
           count: count(products.id),
         })
         .from(products)
+        .leftJoin(subcategories, eq(products.subcategoryId, subcategories.id))
         .where(
           and(
-            categoryIds.length > 0
-              ? inArray(products.categoryId, categoryIds)
+            categoriesParam.length > 0
+              ? inArray(products.categoryId, categoriesParam)
               : undefined,
-            subcategoryIds.length > 0
-              ? inArray(products.subcategoryId, subcategoryIds)
+            subcategoriesParam.length > 0
+              ? inArray(products.subcategoryId, subcategoriesParam)
+              : undefined,
+            navbarSubcategorySlug
+              ? sql`lower(${subcategories.slug}) LIKE ${"%" + navbarSubcategorySlug.toLowerCase().replace(/s$/, "") + "%"}`
               : undefined,
             minPrice ? gte(products.price, minPrice) : undefined,
             maxPrice ? lte(products.price, maxPrice) : undefined,
@@ -136,17 +143,15 @@ export async function getProducts(input: SearchParams) {
           )
         )
         .execute()
-        .then((res) => res[0]?.count ?? 0)
+        .then((res) => res[0]?.count ?? 0),
+    ])
 
-      const pageCount = Math.ceil(total / limit)
+    const pageCount = Math.ceil(total / limit)
 
-      return {
-        data,
-        pageCount,
-      }
-    })
-
-    return transaction
+    return {
+      data,
+      pageCount,
+    }
   } catch (err) {
     return {
       data: [],
@@ -193,30 +198,34 @@ export async function getCategories() {
         .from(categories)
         .orderBy(desc(categories.name))
     },
-    ["categories"],
+    ["categories-v2"],
     {
       revalidate: 3600, // every hour
-      tags: ["categories"],
+      tags: ["categories-v2"],
     }
   )()
 }
 
-export async function getCategorySlugFromId({ id }: { id: string }) {
+export async function getCategoryBySlug({ slug }: { slug: string }) {
   return await cache(
     async () => {
       return db
         .select({
+          id: categories.id,
+          name: categories.name,
           slug: categories.slug,
+          description: categories.description,
+          image: categories.image,
         })
         .from(categories)
-        .where(eq(categories.id, id))
+        .where(sql`${categories.slug} ILIKE ${slug}`)
         .execute()
-        .then((res) => res[0]?.slug)
+        .then((res) => res[0])
     },
-    [`category-slug-${id}`],
+    [`category-${slug}`],
     {
       revalidate: 3600, // every hour
-      tags: [`category-slug-${id}`],
+      tags: [`category-${slug}`],
     }
   )()
 }
@@ -230,6 +239,7 @@ export async function getSubcategories() {
           name: subcategories.name,
           slug: subcategories.slug,
           description: subcategories.description,
+          categoryId: subcategories.categoryId,
         })
         .from(subcategories)
     },
@@ -276,7 +286,7 @@ export async function getSubcategoriesByCategory({
           description: subcategories.description,
         })
         .from(subcategories)
-        .where(eq(subcategories.id, categoryId))
+        .where(eq(subcategories.categoryId, categoryId))
     },
     [`subcategories-${categoryId}`],
     {

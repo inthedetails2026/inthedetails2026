@@ -13,15 +13,18 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { useDataTable } from "@/hooks/use-data-table"
 import { DataTable } from "@/components/data-table/data-table"
 import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header"
 
 interface AwaitedCustomer {
   email: string | null
   name: string | null
-  orderPlaced: number
-  totalSpent: number
-  createdAt: string
+  line1: string | null
+  city: string | null
+  state: string | null
+  country: string | null
+  createdAt: Date
 }
 
 interface CustomersTableProps {
@@ -29,10 +32,9 @@ interface CustomersTableProps {
     data: AwaitedCustomer[]
     pageCount: number
   }>
-  storeId: string
 }
 
-export function CustomersTable({ promise, storeId }: CustomersTableProps) {
+export function CustomersTable({ promise }: CustomersTableProps) {
   const { data, pageCount } = React.use(promise)
 
   // Memoize the columns so they don't re-render on every render
@@ -51,74 +53,52 @@ export function CustomersTable({ promise, storeId }: CustomersTableProps) {
         ),
       },
       {
-        accessorKey: "totalSpent",
+        accessorKey: "line1",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Total Spent" />
+          <DataTableColumnHeader column={column} title="Address" />
         ),
-        cell: ({ cell }) =>
-          formatPrice(cell.getValue() as number, {
-            notation: "standard",
-          }),
       },
       {
-        accessorKey: "orderPlaced",
+        accessorKey: "city",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Order Placed" />
+          <DataTableColumnHeader column={column} title="City" />
+        ),
+      },
+      {
+        accessorKey: "state",
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} title="State" />
+        ),
+      },
+      {
+        accessorKey: "country",
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} title="Country" />
         ),
       },
       {
         accessorKey: "createdAt",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Created At" />
+          <DataTableColumnHeader column={column} title="Joined" />
         ),
         cell: ({ cell }) => formatDate(cell.getValue() as Date),
         enableColumnFilter: false,
       },
-      {
-        id: "actions",
-        cell: ({ row }) => {
-          const slug = row.original.email
-            ?.replace("@", `-${Math.random().toString(36).substring(2, 10)}-`)
-            .replace(".com", "")
-
-          return (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  aria-label="Open menu"
-                  variant="ghost"
-                  className="flex size-8 p-0 data-[state=open]:bg-muted"
-                >
-                  <DotsHorizontalIcon className="size-4" aria-hidden="true" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-[160px]">
-                <DropdownMenuItem asChild>
-                  <Link href={`/dashboard/stores/${storeId}/customers/${slug}`}>
-                    View orders
-                  </Link>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )
-        },
-      },
     ],
-    [storeId]
+    []
   )
 
-  return null
+  const { table } = useDataTable({
+    data,
+    columns,
+    pageCount,
+    filterFields: [
+      {
+        value: "email",
+        label: "Email",
+      },
+    ],
+  })
 
-  // return (
-  //   <DataTable
-  //     data={data}
-  //     pageCount={pageCount}
-  //     searchableColumns={[
-  //       {
-  //         id: "email",
-  //         title: "emails",
-  //       },
-  //     ]}
-  //   />
-  // )
+  return <DataTable table={table} />
 }

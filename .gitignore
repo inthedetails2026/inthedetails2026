@@ -45,3 +45,6 @@ yarn-error.log*
 # typescript
 .contentlayer
 *.tsbuildinfo
+
+# clerk configuration (can include secrets)
+/.clerk/

@@ -49,13 +49,13 @@ export const getProductsSchema = z.object({
   page: z.coerce.number().default(1),
   per_page: z.coerce.number().default(10),
   sort: z.string().optional().default("createdAt.desc"),
-  categories: z.string().optional(),
-  subcategory: z.string().optional(),
-  subcategories: z.string().optional(),
-  price_range: z.string().optional(),
-  store_ids: z.string().optional(),
+  categories: z.union([z.string(), z.array(z.string())]).optional(),
+  subcategory: z.union([z.string(), z.array(z.string())]).optional(),
+  subcategories: z.union([z.string(), z.array(z.string())]).optional(),
+  price_range: z.union([z.string(), z.array(z.string())]).optional(),
+  store_ids: z.union([z.string(), z.array(z.string())]).optional(),
   store_page: z.coerce.number().default(1),
-  active: z.string().optional().default("true"),
+  active: z.union([z.string(), z.array(z.string())]).optional().default("false"),
 })
 
 export const updateProductRatingSchema = z.object({

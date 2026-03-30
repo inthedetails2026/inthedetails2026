@@ -1,18 +1,21 @@
-import type { Metadata, Viewport } from "next"
-import { env } from "@/env.js"
-import { ClerkProvider } from "@clerk/nextjs"
+import { GeistMono } from "geist/font/mono"
+import { Metadata, Viewport } from "next"
+import { createServerClient, type CookieOptions } from '@supabase/ssr'
+import { cookies } from 'next/headers'
 
 import "@/styles/globals.css"
 
-import { GeistMono } from "geist/font/mono"
+import { env } from "@/env.js"
 import { GeistSans } from "geist/font/sans"
 
+
 import { siteConfig } from "@/config/site"
-import { fontHeading } from "@/lib/fonts"
+import { fontHeading, fontSans, fontMono } from "@/lib/fonts"
 import { absoluteUrl, cn } from "@/lib/utils"
 import { Toaster } from "@/components/ui/toaster"
 import { Analytics } from "@/components/analytics"
 import { ThemeProvider } from "@/components/providers"
+import { WhatsAppButton } from "@/components/whatsapp-button"
 import { TailwindIndicator } from "@/components/tailwind-indicator"
 
 export const metadata: Metadata = {
@@ -26,7 +29,8 @@ export const metadata: Metadata = {
     "nextjs",
     "react",
     "react server components",
-    "skateshop",
+    "intothedetails",
+
     "skateboarding",
     "kickflip",
   ],
@@ -71,31 +75,52 @@ interface RootLayoutProps {
 }
 
 export default function RootLayout({ children }: RootLayoutProps) {
+  const cookieStore = cookies()
+
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name: string) {
+          return cookieStore.get(name)?.value
+        },
+        set(name: string, value: string, options: CookieOptions) {
+          cookieStore.set({ name, value, ...options })
+        },
+        remove(name: string, options: CookieOptions) {
+          cookieStore.set({ name, value: '', ...options })
+        },
+      },
+    }
+  )
+
   return (
-    <ClerkProvider>
-      <html lang="en" suppressHydrationWarning>
-        <head />
-        <body
-          className={cn(
-            "min-h-screen bg-background font-sans antialiased",
-            GeistSans.variable,
-            GeistMono.variable,
-            fontHeading.variable
-          )}
+    <html lang="en" suppressHydrationWarning>
+      <head />
+      <body
+        className={cn(
+          "min-h-screen bg-background font-sans antialiased",
+          fontSans.variable,
+          fontMono.variable,
+          fontHeading.variable
+        )}
+      >
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
         >
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            {children}
-            <TailwindIndicator />
-            <Analytics />
-          </ThemeProvider>
-          <Toaster />
-        </body>
-      </html>
-    </ClerkProvider>
+          {children}
+          <TailwindIndicator />
+          <Analytics />
+          <WhatsAppButton />
+        </ThemeProvider>
+        <Toaster />
+      </body>
+    </html>
   )
 }
+
+

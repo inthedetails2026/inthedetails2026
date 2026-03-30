@@ -17,7 +17,6 @@ export default async function IndexPage() {
   const githubStarsPromise = getGithubStars()
   const productsPromise = getFeaturedProducts()
   const categoriesPromise = getCategories()
-  const storesPromise = getFeaturedStores()
 
   return (
     <React.Suspense fallback={<LobbySkeleton />}>
@@ -25,8 +24,8 @@ export default async function IndexPage() {
         githubStarsPromise={githubStarsPromise}
         productsPromise={productsPromise}
         categoriesPromise={categoriesPromise}
-        storesPromise={storesPromise}
       />
     </React.Suspense>
   )
 }
+

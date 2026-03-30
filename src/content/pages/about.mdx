@@ -1,50 +1,89 @@
 ---
-title: About
-description: About the project and the author of the project.
+title: About Us
+description: Learn more about In The Details and our mission to elevate your home.
 ---
 
-This is an open source e-commerce store built with everything new in [Next.js](https://nextjs.org/).
-The project is still in development. You can follow the progress on [Twitter](https://twitter.com/sadmann17).
+<div className="flex flex-col gap-16 pb-16 pt-8">
 
-## Tech stack used
+  {/* Hero Image */}
+  <div className="relative mx-auto w-full max-w-[1200px] overflow-hidden rounded-2xl border bg-muted shadow-sm">
+    <Image
+      src="/images/about_us_hero.png"
+      width={1200}
+      height={600}
+      alt="In The Details Showroom"
+      className="object-cover w-full h-[300px] sm:h-[400px] md:h-[500px]"
+    />
+  </div>
 
-- [Next.js](https://nextjs.org)
-- [Tailwind CSS](https://tailwindcss.com)
-- [Clerk Auth](https://clerk.dev)
-- [Drizzle ORM](https://orm.drizzle.team)
-- [React Email](https://react.email)
-- [Contentlayer](https://www.contentlayer.dev)
-- [uploadthing](https://uploadthing.com)
-- [Stripe](https://stripe.com)
+  <div className="mx-auto w-full max-w-[900px] space-y-16">
+    
+    {/* Story Section */}
+    <section className="space-y-6">
+      <h2 className="text-3xl font-bold tracking-tight">Our Story</h2>
+      <p className="text-lg leading-relaxed text-muted-foreground">
+        Hello, I'm <strong>Mireille Nasr</strong>, the founder of <span className="text-primary font-bold">In The Details</span>. For me, interior design isn't just an interest; it's a calling. I started this shop because I realized a simple truth:
+      </p>
+      
+      <div className="my-8">
+        <Callout icon="✨" className="bg-primary/5 border-primary/20 p-6 sm:p-8">
+          <p className="text-xl sm:text-2xl font-serif italic leading-relaxed text-foreground">
+            "A full-time job is not enough when your heart is somewhere else. I'm here to turn your favorite spaces into something even better."
+          </p>
+        </Callout>
+      </div>
+    </section>
 
-## Features to be implemented
+    {/* Mission Section (Split Layout) */}
+    <section className="grid sm:grid-cols-2 gap-10 items-center pt-10 border-t">
+      <div className="space-y-4">
+        <h2 className="text-3xl font-bold tracking-tight">Our Mission</h2>
+        <p className="text-lg leading-relaxed text-muted-foreground">
+          We believe your home should be a true reflection of who you are a personal sanctuary that brings you peace, comfort, and inspiration. Our carefully curated collection of home decor is designed to help you elevate your surroundings, bridging the gap between everyday living and extraordinary design.
+        </p>
+      </div>
+      <div className="overflow-hidden rounded-xl border bg-muted shadow-sm relative aspect-square group">
+        <Image
+          src="/images/craftsmanship_detail.png"
+          width={500}
+          height={500}
+          alt="Quality and Craftsmanship"
+          className="object-cover w-full h-full hover:scale-105 transition-transform duration-700 ease-in-out"
+        />
+      </div>
+    </section>
 
-- [x] Authentication with **Clerk**
-- [x] File uploads with **uploadthing**
-- [x] Newsletter subscription with **React Email** and **Resend**
-- [x] Blog using **MDX** and **Contentlayer**
-- [x] ORM using **Drizzle ORM**
-- [x] Database on **PlanetScale**
-- [x] Validation with **Zod**
-- [x] Storefront with products, categories, and subcategories
-- [x] Seller and customer workflows
-- [x] User subscriptions with **Stripe**
-- [ ] Checkout with **Stripe Checkout**
-- [ ] Admin dashboard with stores, products, orders, subscriptions, and payments
+    {/* Features Section */}
+    <section className="space-y-8 pt-10 border-t">
+      <div className="space-y-4 text-center max-w-[700px] mx-auto">
+        <h2 className="text-3xl font-bold tracking-tight">What We Offer</h2>
+        <p className="text-lg leading-relaxed text-muted-foreground">
+          Whether you are starting with a blank canvas or just looking for that perfect finishing touch, we provide pieces that breathe life into your environment:
+        </p>
+      </div>
 
-## Credits
+      <div className="grid sm:grid-cols-3 gap-6 pt-4">
+        <div className="flex flex-col gap-3 p-6 rounded-xl border bg-card hover:border-primary/50 transition-colors shadow-sm">
+          <h3 className="font-bold text-xl text-primary">Curated Aesthetics</h3>
+          <p className="text-muted-foreground leading-relaxed">Thoughtfully selected decor that adds character, warmth, and style to any room.</p>
+        </div>
+        <div className="flex flex-col gap-3 p-6 rounded-xl border bg-card hover:border-primary/50 transition-colors shadow-sm">
+          <h3 className="font-bold text-xl text-primary">Quality & Craftsmanship</h3>
+          <p className="text-muted-foreground leading-relaxed">Beautiful pieces that are made to be loved and lived with.</p>
+        </div>
+        <div className="flex flex-col gap-3 p-6 rounded-xl border bg-card hover:border-primary/50 transition-colors shadow-sm">
+          <h3 className="font-bold text-xl text-primary">A Personal Touch</h3>
+          <p className="text-muted-foreground leading-relaxed">Items chosen with the specific goal of making a house feel uniquely like your home.</p>
+        </div>
+      </div>
+    </section>
 
-- [OneStopShop](https://onestopshop.jackblatch.com) - For drizzle ORM implementation with planetscale, and stripe account connection for each store
-- [Acme Corp](https://acme-corp.jumr.dev) - For the OAuth implementation with Clerk, and AuthLayout
-- [craft.mxkaske.dev](https://craft.mxkaske.dev) - For the awesome fancy components
-- [Taxonomy](https://tx.shadcn.com) - For contentlayer, and stripe subscription implementation
-- [shadcn/ui](https://ui.shadcn.com) - For the awesome reusable components library
+    {/* Footer Section */}
+    <section className="flex flex-col items-center justify-center pt-16 pb-8 text-center border-t">
+      <p className="text-2xl font-medium text-foreground max-w-[700px] leading-relaxed">
+        Thank you for letting me and <span className="text-primary font-bold">In The Details</span> be a part of your home's story. <br/><span className="text-muted-foreground mt-2 inline-block">Let's create something beautiful together.</span>
+      </p>
+    </section>
 
-## About the author
-
-Hi, I'm [Sadman](https://twitter.com/sadmann17). Self-taught web developer building websites with AI and [Next.js](https://nextjs.org/). My socials are below.
-
-- [Twitter](https://twitter.com/sadmann17)
-- [GitHub](https://github.com/sadmann7)
-- [Discord](https://discord.com/users/sadmann7)
-- [cal.com](https://cal.com/sadmann7)
+  </div>
+</div>

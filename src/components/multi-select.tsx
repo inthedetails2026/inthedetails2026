@@ -2,12 +2,25 @@
 
 import * as React from "react"
 import type { Option } from "@/types"
-import { Cross2Icon } from "@radix-ui/react-icons"
-import { Command as CommandPrimitive } from "cmdk"
-
+import { CheckIcon, PlusCircledIcon } from "@radix-ui/react-icons"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Command, CommandGroup, CommandItem } from "@/components/ui/command"
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  CommandSeparator,
+} from "@/components/ui/command"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+import { Separator } from "@/components/ui/separator"
+import { cn } from "@/lib/utils"
 
 interface MultiSelectProps {
   selected: Option[] | null
@@ -24,130 +37,87 @@ export function MultiSelect({
   placeholder = "Select options",
   options,
 }: MultiSelectProps) {
-  const inputRef = React.useRef<HTMLInputElement>(null)
-  const [open, setOpen] = React.useState(false)
-  const [query, setQuery] = React.useState("")
-
-  // Register as input field to be used in react-hook-form
-  React.useEffect(() => {
-    if (onChange) onChange(selected?.length ? selected : null)
-  }, [onChange, selected])
-
-  const handleSelect = React.useCallback(
-    (option: Option) => {
-      setSelected((prev) => [...(prev ?? []), option])
-    },
-    [setSelected]
+  const selectedValues = React.useMemo(
+    () => new Set(selected?.map((s) => s.value)),
+    [selected]
   )
-
-  const handleRemove = React.useCallback(
-    (option: Option) => {
-      setSelected((prev) => prev?.filter((item) => item !== option) ?? [])
-    },
-    [setSelected]
-  )
-
-  const handleKeyDown = React.useCallback(
-    (event: React.KeyboardEvent<HTMLDivElement>) => {
-      if (!inputRef.current) return
-
-      if (event.key === "Backspace" || event.key === "Delete") {
-        setSelected((prev) => prev?.slice(0, -1) ?? [])
-      }
-
-      // Blur input on escape
-      if (event.key === "Escape") {
-        inputRef.current.blur()
-      }
-    },
-    [setSelected]
-  )
-
-  // Memoize filtered options to avoid unnecessary re-renders
-  const filteredOptions = React.useMemo(() => {
-    return options.filter((option) => {
-      if (selected?.find((item) => item.value === option.value)) return false
-
-      if (query.length === 0) return true
-
-      return option.label.toLowerCase().includes(query.toLowerCase())
-    })
-  }, [options, query, selected])
 
   return (
-    <Command
-      onKeyDown={handleKeyDown}
-      className="overflow-visible bg-transparent"
-    >
-      <div className="group rounded-md border border-input px-3 py-2 text-sm ring-offset-background focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
-        <div className="flex flex-wrap gap-1">
-          {selected?.map((option) => {
-            return (
-              <Badge
-                key={option.value}
-                variant="secondary"
-                className="rounded hover:bg-secondary"
-              >
-                {option.label}
-                <Button
-                  aria-label="Remove option"
-                  size="sm"
-                  className="ml-2 h-auto bg-transparent p-0 text-primary hover:bg-transparent hover:text-destructive"
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      e.preventDefault()
-                      e.stopPropagation()
-                      handleRemove(option)
-                    }
-                  }}
-                  onMouseDown={(e) => {
-                    e.preventDefault()
-                    e.stopPropagation()
-                  }}
-                  onClick={() => handleRemove(option)}
+    <Popover>
+      <PopoverTrigger asChild>
+        <Button
+          aria-label="Filter data"
+          variant="outline"
+          size="sm"
+          className="flex h-auto min-h-9 w-full justify-start border-input bg-transparent px-3 py-2 font-normal hover:bg-transparent"
+        >
+          <div className="flex flex-wrap items-center gap-1">
+            {selected?.length ? (
+              selected.map((option) => (
+                <Badge
+                  variant="secondary"
+                  key={option.value}
+                  className="rounded-sm px-1 font-normal"
                 >
-                  <Cross2Icon className="size-3" aria-hidden="true" />
-                </Button>
-              </Badge>
-            )
-          })}
-          <CommandPrimitive.Input
-            ref={inputRef}
-            placeholder={placeholder}
-            className="flex-1 bg-transparent px-1 py-0.5 outline-none placeholder:text-muted-foreground"
-            value={query}
-            onValueChange={setQuery}
-            onBlur={() => setOpen(false)}
-            onFocus={() => setOpen(true)}
-          />
-        </div>
-      </div>
-      <div className="relative z-50 mt-2">
-        {open && filteredOptions.length > 0 ? (
-          <div className="absolute top-0 w-full rounded-md border bg-popover text-popover-foreground shadow-md outline-none animate-in">
-            <CommandGroup className="h-full overflow-auto">
-              {filteredOptions.map((option) => {
+                  {option.label}
+                </Badge>
+              ))
+            ) : (
+              <span className="text-muted-foreground">{placeholder}</span>
+            )}
+          </div>
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0" align="start">
+        <Command className="font-sans">
+          <CommandInput placeholder={placeholder} />
+          <CommandList>
+            <CommandEmpty>No results found.</CommandEmpty>
+            <CommandGroup>
+              {options.map((option) => {
+                const isSelected = selectedValues.has(option.value)
                 return (
                   <CommandItem
                     key={option.value}
-                    className="px-2 py-1.5 text-sm"
-                    onMouseDown={(e) => {
-                      e.preventDefault()
-                      e.stopPropagation()
-                    }}
                     onSelect={() => {
-                      handleSelect(option)
-                      setQuery("")
+                      if (isSelected) {
+                        setSelected((prev) => prev?.filter((s) => s.value !== option.value) ?? [])
+                      } else {
+                        setSelected((prev) => [...(prev ?? []), option])
+                      }
                     }}
                   >
-                    {option.label}
+                    <div
+                      className={cn(
+                        "mr-2 flex size-4 items-center justify-center rounded-sm border border-primary",
+                        isSelected
+                          ? "bg-primary text-primary-foreground"
+                          : "opacity-50 [&_svg]:invisible"
+                      )}
+                    >
+                      <CheckIcon className={cn("size-4")} aria-hidden="true" />
+                    </div>
+                    <span>{option.label}</span>
                   </CommandItem>
                 )
               })}
             </CommandGroup>
-          </div>
-        ) : null}
-      </div>
-    </Command>
+            {selectedValues.size > 0 && (
+              <>
+                <CommandSeparator />
+                <CommandGroup>
+                  <CommandItem
+                    onSelect={() => setSelected(null)}
+                    className="justify-center text-center"
+                  >
+                    Clear filters
+                  </CommandItem>
+                </CommandGroup>
+              </>
+            )}
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
   )
 }

@@ -2,8 +2,8 @@
 
 import * as React from "react"
 import { useRouter } from "next/navigation"
-import { useSignIn } from "@clerk/nextjs"
 import { zodResolver } from "@hookform/resolvers/zod"
+
 import { useForm } from "react-hook-form"
 import type { z } from "zod"
 
@@ -24,9 +24,11 @@ import { PasswordInput } from "@/components/password-input"
 
 type Inputs = z.infer<typeof authSchema>
 
+import { createClient } from "@/lib/supabase/client"
+
 export function SignInForm() {
   const router = useRouter()
-  const { isLoaded, signIn, setActive } = useSignIn()
+  const supabase = createClient()
   const [loading, setLoading] = React.useState(false)
 
   // react-hook-form
@@ -39,30 +41,27 @@ export function SignInForm() {
   })
 
   async function onSubmit(data: Inputs) {
-    if (!isLoaded) return
-
     setLoading(true)
 
     try {
-      const result = await signIn.create({
-        identifier: data.email,
+      const { error } = await supabase.auth.signInWithPassword({
+        email: data.email,
         password: data.password,
       })
 
-      if (result.status === "complete") {
-        await setActive({ session: result.createdSessionId })
-
-        router.push(`${window.location.origin}/`)
-      } else {
-        /*Investigate why the login hasn't completed */
-        console.log(result)
+      if (error) {
+        throw error
       }
+
+      router.push("/")
+      router.refresh()
     } catch (err) {
       showErrorToast(err)
     } finally {
       setLoading(false)
     }
   }
+
 
   return (
     <Form {...form}>

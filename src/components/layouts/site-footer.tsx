@@ -49,35 +49,11 @@ export function SiteFooter() {
             <JoinNewsletterForm />
           </section>
         </section>
-        <section className="flex items-center space-x-4">
+        <section className="flex justify-between items-center space-x-4">
           <div className="flex-1 text-left text-sm leading-loose text-muted-foreground">
-            Built by{" "}
-            <Link
-              href="https://twitter.com/sadmann17"
-              target="_blank"
-              rel="noreferrer"
-              className="font-semibold transition-colors hover:text-foreground"
-            >
-              Sadman
-              <span className="sr-only">Twitter</span>
-            </Link>
-            .
+            © {new Date().getFullYear()} {siteConfig.name}. All rights reserved.
           </div>
           <div className="flex items-center space-x-1">
-            <Link
-              href={siteConfig.links.github}
-              target="_blank"
-              rel="noreferrer"
-              className={cn(
-                buttonVariants({
-                  size: "icon",
-                  variant: "ghost",
-                })
-              )}
-            >
-              <Icons.gitHub className="size-4" aria-hidden="true" />
-              <span className="sr-only">GitHub</span>
-            </Link>
             <ModeToggle />
           </div>
         </section>

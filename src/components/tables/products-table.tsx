@@ -28,8 +28,11 @@ import { DataTableColumnHeader } from "@/components/data-table/data-table-column
 
 type AwaitedProduct = Pick<
   Product,
-  "id" | "name" | "categoryId" | "price" | "inventory" | "rating" | "createdAt"
->
+  "id" | "name" | "price" | "inventory" | "rating" | "createdAt"
+> & {
+  category: string | null
+  subcategory: string | null
+}
 
 interface ProductsTableProps {
   promise: Promise<{
@@ -157,11 +160,12 @@ export function ProductsTable({
             <DropdownMenuContent align="end" className="w-[160px]">
               <DropdownMenuItem asChild>
                 <Link
-                  href={`/dashboard/stores/${storeId}/products/${row.original.id}`}
+                  href={`/admin/products/${row.original.id}`}
                 >
                   Edit
                 </Link>
               </DropdownMenuItem>
+
               <DropdownMenuItem asChild>
                 <Link href={`/product/${row.original.id}`}>View</Link>
               </DropdownMenuItem>

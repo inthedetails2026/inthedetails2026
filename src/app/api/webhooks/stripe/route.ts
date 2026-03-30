@@ -1,12 +1,14 @@
 import { revalidateTag } from "next/cache"
+import { getStore, getStoreId } from "@/lib/store"
 import { headers } from "next/headers"
 import { db } from "@/db"
 import { addresses, carts, orders, payments, products } from "@/db/schema"
 import { env } from "@/env.js"
-import { clerkClient } from "@clerk/nextjs/server"
-import { eq } from "drizzle-orm"
+import { eq, or } from "drizzle-orm"
+
 import type Stripe from "stripe"
 import { z } from "zod"
+import { generateId } from "@/lib/id"
 
 import { stripe } from "@/lib/stripe"
 import {
@@ -43,27 +45,7 @@ export async function POST(req: Request) {
         checkoutSessionCompleted?.metadata?.userId &&
         !checkoutSessionCompleted?.metadata?.cartId
       ) {
-        // Retrieve the subscription details from Stripe
-        const subscription = await stripe.subscriptions.retrieve(
-          checkoutSessionCompleted.subscription as string
-        )
-
-        // Update the user stripe into in our database.
-        // Since this is the initial subscription, we need to update
-        // the subscription id and customer id.
-        await clerkClient.users.updateUserMetadata(
-          checkoutSessionCompleted?.metadata?.userId,
-          {
-            privateMetadata: {
-              stripeSubscriptionId: subscription.id,
-              stripeCustomerId: subscription.customer as string,
-              stripePriceId: subscription.items.data[0]?.price.id,
-              stripeCurrentPeriodEnd: new Date(
-                subscription.current_period_end * 1000
-              ),
-            },
-          }
-        )
+         // Subscription logic removed for Supabase migration
       }
       break
     case "invoice.payment_succeeded":
@@ -74,25 +56,9 @@ export async function POST(req: Request) {
         invoicePaymentSucceeded?.metadata?.userId &&
         !invoicePaymentSucceeded?.metadata?.cartId
       ) {
-        // Retrieve the subscription details from Stripe
-        const subscription = await stripe.subscriptions.retrieve(
-          invoicePaymentSucceeded.subscription as string
-        )
-
-        // Update the price id and set the new period end
-        await clerkClient.users.updateUserMetadata(
-          invoicePaymentSucceeded?.metadata?.userId,
-          {
-            privateMetadata: {
-              stripePriceId: subscription.items.data[0]?.price.id,
-              stripeCurrentPeriodEnd: new Date(
-                subscription.current_period_end * 1000
-              ),
-            },
-          }
-        )
+         // Subscription logic removed for Supabase migration
       }
-      revalidateTag(`${invoicePaymentSucceeded?.metadata?.userId}-subscription`)
+      // revalidateTag(`${invoicePaymentSucceeded?.metadata?.userId}-subscription`)
       break
 
     // Handling payment events
@@ -117,10 +83,7 @@ export async function POST(req: Request) {
       // If there are items in metadata, then create order
       if (checkoutItems) {
         try {
-          if (!event.account) throw new Error("No account found.")
-
           // Parsing items from metadata
-          // Didn't parse before because can pass the unparsed data directly to the order table items json column in the db
           const safeParsedItems = z
             .array(checkoutItemSchema)
             .safeParse(
@@ -131,16 +94,15 @@ export async function POST(req: Request) {
             throw new Error("Could not parse items.")
           }
 
-          const payment = await db.query.payments.findFirst({
-            columns: {
-              storeId: true,
-            },
-            where: eq(payments.stripeAccountId, event.account),
-          })
+          const store = await getStore()
+          const storeId = store.id
 
-          if (!payment?.storeId) {
-            return new Response("Store not found.", { status: 404 })
-          }
+          const processingFeePercent = Number(store.processingFeePercent) / 100
+          const processingFeeFixed = store.processingFeeFixed / 100
+          const totalAmount = Number(orderAmount) / 100
+
+          const stripeFee = totalAmount * processingFeePercent + processingFeeFixed
+          const netAmount = totalAmount - stripeFee
 
           // Create new address in DB
           const stripeAddress = paymentIntentSucceeded?.shipping?.address
@@ -161,20 +123,29 @@ export async function POST(req: Request) {
 
           if (!newAddress[0]?.insertedId) throw new Error("No address created.")
 
-          // Create new order in db
-          await db.insert(orders).values({
-            storeId: payment.storeId,
-            items: checkoutItems ?? [],
+          // Create new order in db with explicit ID and precision
+          console.log("🔥 WEBHOOK: Attempting direct order insert...")
+          const newOrder = await db.insert(orders).values({
+            id: generateId("order"),
+            storeId,
+            items: safeParsedItems.data,
             quantity: safeParsedItems.data.reduce(
               (acc, item) => acc + item.quantity,
               0
             ),
-            amount: String(Number(orderAmount) / 100),
+            amount: totalAmount.toFixed(2),
+            stripeFee: stripeFee.toFixed(2),
+            netAmount: netAmount.toFixed(2),
             stripePaymentIntentId: paymentIntentId,
             stripePaymentIntentStatus: paymentIntentSucceeded?.status,
-            name: paymentIntentSucceeded?.shipping?.name ?? "",
+            name: paymentIntentSucceeded?.shipping?.name ?? "Customer",
             email: paymentIntentSucceeded?.receipt_email ?? "",
             addressId: newAddress[0]?.insertedId,
+          }).returning({ insertedId: orders.id })
+
+          console.log("DEBUG: SUCCESS! Webhook created order in DB:", { 
+            id: newOrder[0]?.insertedId, 
+            intent: paymentIntentId 
           })
 
           // Update product inventory in db

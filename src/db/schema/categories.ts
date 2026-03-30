@@ -9,8 +9,8 @@ import { lifecycleDates } from "./utils"
 
 export const categories = pgTable("categories", {
   id: varchar("id", { length: 30 })
-    .$defaultFn(() => generateId())
-    .primaryKey(), // prefix_ + nanoid (12)
+    .$defaultFn(() => generateId("category"))
+    .primaryKey(), // cat_ + nanoid (12)
   name: text("name").notNull().unique(),
   slug: text("slug").notNull().unique(),
   image: text("image"),

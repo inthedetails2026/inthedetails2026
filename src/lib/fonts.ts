@@ -1,13 +1,15 @@
-import localFont from "next/font/local"
 import { GeistMono } from "geist/font/mono"
-import { GeistSans } from "geist/font/sans"
+import { Cormorant_Garamond, Outfit } from "next/font/google"
 
-export const fontSans = GeistSans
+export const fontSans = Outfit({
+  subsets: ["latin"],
+  variable: "--font-sans",
+})
 
 export const fontMono = GeistMono
 
-// Font files can be colocated inside of `pages`
-export const fontHeading = localFont({
-  src: "../assets/fonts/CalSans-SemiBold.woff2",
+export const fontHeading = Cormorant_Garamond({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
   variable: "--font-heading",
 })

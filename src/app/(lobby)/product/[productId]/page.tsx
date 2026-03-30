@@ -53,6 +53,9 @@ export async function generateMetadata({
   }
 }
 
+import { safeParseImages } from "@/lib/images"
+import type { StoredFile } from "@/types"
+
 export default async function ProductPage({ params }: ProductPageProps) {
   const productId = decodeURIComponent(params.productId)
 
@@ -113,7 +116,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
       <div className="flex flex-col gap-8 md:flex-row md:gap-16">
         <ProductImageCarousel
           className="w-full md:w-1/2"
-          images={product.images ?? []}
+          images={(safeParseImages(product.images) as StoredFile[]) ?? []}
           options={{
             loop: true,
           }}

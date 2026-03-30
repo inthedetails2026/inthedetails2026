@@ -8,10 +8,11 @@ import {
 import { redirect } from "next/navigation"
 import { db } from "@/db"
 import { stores } from "@/db/schema"
-import { auth } from "@clerk/nextjs/server"
+import { createClient } from "@/lib/supabase/server"
 import { and, desc, eq, not } from "drizzle-orm"
 
 import { getErrorMessage } from "@/lib/handle-error"
+
 import { slugify } from "@/lib/utils"
 import {
   updateStoreSchema,
@@ -57,6 +58,9 @@ export async function updateStore(storeId: string, fd: FormData) {
     const input = updateStoreSchema.parse({
       name: fd.get("name"),
       description: fd.get("description"),
+      processingFeePercent: fd.get("processingFeePercent"),
+      processingFeeFixed: fd.get("processingFeeFixed"),
+      deliveryFee: fd.get("deliveryFee"),
     })
 
     const storeWithSameName = await db.query.stores.findFirst({
@@ -75,6 +79,9 @@ export async function updateStore(storeId: string, fd: FormData) {
       .set({
         name: input.name,
         description: input.description,
+        processingFeePercent: input.processingFeePercent.toString(),
+        processingFeeFixed: input.processingFeeFixed,
+        deliveryFee: Math.round(input.deliveryFee * 100),
       })
       .where(eq(stores.id, storeId))
 
@@ -93,28 +100,18 @@ export async function updateStore(storeId: string, fd: FormData) {
 }
 
 export async function deleteStore(storeId: string) {
-  const { userId } = auth()
+  const supabase = createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  const userId = user?.id
 
   if (!userId) {
     throw new Error("Unauthorized")
   }
 
-  const allStores = await db
-    .select({
-      id: stores.id,
-      userId: stores.userId,
-    })
-    .from(stores)
-    .where(and(eq(stores.id, storeId), eq(stores.userId, userId)))
-    .orderBy(desc(stores.createdAt))
-
-  // if (allStores.length < 2) {
-  //   throw new Error("Can't delete the only store")
-  // }
-
-  await db.delete(stores).where(eq(stores.id, storeId))
+  await db.delete(stores).where(and(eq(stores.id, storeId), eq(stores.userId, userId)))
 
   revalidateTag(`stores-${userId}`)
 
-  redirect(`/store/${allStores[1]?.id}`)
+  redirect("/admin")
 }
+

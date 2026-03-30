@@ -1,16 +1,53 @@
 ---
-title: Contact
-description: Contact us for any questions or concerns about Skateshop13.
+title: Contact Us
+description: Get in touch with the In The Details team. We're here to help you elevate your space.
 ---
 
-If you have any questions or concerns about Skateshop13, please contact us using one of the methods below. We will try to respond as soon as possible.
+<PageHeader
+  as="section"
+  className="mx-auto items-center gap-2 text-center"
+>
+  <PageHeaderHeading>Get in Touch</PageHeaderHeading>
+  <PageHeaderDescription>
+    Whether you have a question about our curated pieces, an order, or just want to say hello, we'd love to hear from you.
+  </PageHeaderDescription>
+</PageHeader>
 
-## Contact Information
+<div className="grid grid-cols-1 md:grid-cols-2 gap-10 mt-10">
+  <div className="space-y-8">
+    <div>
+      <h3 className="text-xl font-heading font-bold mb-4">Contact Information</h3>
+      <p className="text-muted-foreground mb-6">
+        Our team is available to assist you Monday through Friday, from 9:00 AM to 5:00 PM EST.
+      </p>
+      
+      <div className="space-y-4">
+        <div className="flex items-center gap-4">
+          <div className="size-10 rounded-full bg-primary/10 flex items-center justify-center">
+            <Icons.placeholder className="size-5 text-primary" />
+          </div>
+          <div>
+            <p className="font-bold">General Enquiries</p>
+            <a href="mailto:info@inthedetails.net" className="text-primary hover:underline">info@inthedetails.net</a>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+    
+    <div>
+      <h3 className="text-xl font-heading font-bold mb-4">Social Presence</h3>
+      <p className="text-muted-foreground mb-4">Follow us for interior design inspiration and shop updates.</p>
+      <div className="flex gap-4">
+        <a href="https://www.instagram.com/inthedetails_decor" className="size-10 rounded-full bg-muted flex items-center justify-center hover:bg-primary/20 transition-colors">
+          <Icons.placeholder className="size-5" />
+        </a>
+      </div>
+    </div>
+  </div>
 
-- **Email:** [sadmann898@gmail.com](mailto:sadmann898@gmail.com)
-
-- **Twitter:** [@sadmann17](https://twitter.com/sadmann17)
-
-- **Discord:** [sadmann7](https://discord.com/users/sadmann7)
-
-- **cal.com:** [sadmann7](https://cal.com/sadmann7)
+  <div className="h-fit">
+    <h3 className="text-xl font-heading font-bold mb-6">Send us a Message</h3>
+    <ContactForm />
+  </div>
+</div>

@@ -2,14 +2,13 @@
 
 import * as React from "react"
 import { useRouter } from "next/navigation"
-import { useSignUp } from "@clerk/nextjs"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import type { z } from "zod"
 
 import { showErrorToast } from "@/lib/handle-error"
-import { authSchema } from "@/lib/validations/auth"
+import { signUpSchema } from "@/lib/validations/auth"
 import { Button } from "@/components/ui/button"
 import {
   Form,
@@ -22,43 +21,59 @@ import {
 import { Input } from "@/components/ui/input"
 import { Icons } from "@/components/icons"
 import { PasswordInput } from "@/components/password-input"
+import { createClient } from "@/lib/supabase/client"
+import { saveUserAddress } from "@/lib/actions/auth"
 
-type Inputs = z.infer<typeof authSchema>
+type Inputs = z.infer<typeof signUpSchema>
 
 export function SignUpForm() {
   const router = useRouter()
-  const { isLoaded, signUp } = useSignUp()
+  const supabase = createClient()
   const [loading, setLoading] = React.useState(false)
 
   // react-hook-form
   const form = useForm<Inputs>({
-    resolver: zodResolver(authSchema),
+    resolver: zodResolver(signUpSchema),
     defaultValues: {
       email: "",
       password: "",
+      name: "",
+      line1: "",
+      line2: "",
+      city: "",
+      state: "",
+      postalCode: "",
+      country: "",
+      phone: "",
     },
   })
 
   async function onSubmit(data: Inputs) {
-    if (!isLoaded) return
-
     setLoading(true)
 
     try {
-      await signUp.create({
-        emailAddress: data.email,
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email: data.email,
         password: data.password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
+          data: {
+            full_name: data.name,
+          }
+        },
       })
 
-      // Send email verification code
-      await signUp.prepareEmailAddressVerification({
-        strategy: "email_code",
-      })
+      if (authError) throw authError
+      if (!authData.user) throw new Error("No user returned")
 
-      router.push("/signup/verify-email")
+      const { error: addressError } = await saveUserAddress(data, authData.user.id)
+      
+      if (addressError) throw new Error(addressError)
+
       toast.message("Check your email", {
-        description: "We sent you a 6-digit verification code.",
+        description: "We sent you a confirmation link.",
       })
+      router.push("/signin")
     } catch (err) {
       showErrorToast(err)
     } finally {
@@ -95,6 +110,114 @@ export function SignUpForm() {
             </FormItem>
           )}
         />
+        <FormField
+          control={form.control}
+          name="name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Full Name</FormLabel>
+              <FormControl>
+                <Input placeholder="Rodney Mullen" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="phone"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Phone Number (Mandatory for Delivery)</FormLabel>
+              <FormControl>
+                <Input placeholder="+961 70 123 456" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <FormField
+            control={form.control}
+            name="line1"
+            render={({ field }) => (
+              <FormItem className="col-span-1 md:col-span-2">
+                <FormLabel>Address Line 1</FormLabel>
+                <FormControl>
+                  <Input placeholder="123 Skate Street" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="line2"
+            render={({ field }) => (
+              <FormItem className="col-span-1 md:col-span-2">
+                <FormLabel>Address Line 2 (Optional)</FormLabel>
+                <FormControl>
+                  <Input placeholder="Apartment 4B" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="city"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>City</FormLabel>
+                <FormControl>
+                  <Input placeholder="Casablanca" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="state"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>State / Province</FormLabel>
+                <FormControl>
+                  <Input placeholder="Morocco" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="postalCode"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Postal Code</FormLabel>
+                <FormControl>
+                  <Input placeholder="20000" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="country"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Country</FormLabel>
+                <FormControl>
+                  <Input placeholder="Morocco" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
         <Button className="mt-2" disabled={loading}>
           {loading && (
             <Icons.spinner

@@ -8,7 +8,7 @@ import { ArrowLeftIcon } from "@radix-ui/react-icons"
 import { eq } from "drizzle-orm"
 
 import { getCart } from "@/lib/actions/cart"
-import { createPaymentIntent, getStripeAccount } from "@/lib/actions/stripe"
+import { createPaymentIntent } from "@/lib/actions/stripe"
 import { cn, formatPrice } from "@/lib/utils"
 import { Button, buttonVariants } from "@/components/ui/button"
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer"
@@ -39,6 +39,7 @@ export default async function CheckoutPage({ params }: CheckoutPageProps) {
       id: stores.id,
       name: stores.name,
       stripeAccountId: stores.stripeAccountId,
+      deliveryFee: stores.deliveryFee,
     })
     .from(stores)
     .where(eq(stores.id, storeId))
@@ -49,10 +50,6 @@ export default async function CheckoutPage({ params }: CheckoutPageProps) {
     notFound()
   }
 
-  const { isConnected } = await getStripeAccount({
-    storeId,
-  })
-
   const cartLineItems = await getCart({ storeId })
 
   const paymentIntentPromise = createPaymentIntent({
@@ -60,37 +57,12 @@ export default async function CheckoutPage({ params }: CheckoutPageProps) {
     items: cartLineItems,
   })
 
-  const total = cartLineItems.reduce(
+  const subtotal = cartLineItems.reduce(
     (total, item) => total + Number(item.quantity) * Number(item.price),
     0
   )
-
-  if (!(isConnected && store.stripeAccountId)) {
-    return (
-      <Shell variant="centered">
-        <div className="flex flex-col items-center justify-center gap-2 pt-20">
-          <div className="text-center text-2xl font-bold">
-            Store is not connected to Stripe
-          </div>
-          <div className="text-center text-muted-foreground">
-            Store owner needs to connect their store to Stripe to accept
-            payments
-          </div>
-          <Link
-            aria-label="Back to cart"
-            href="/cart"
-            className={cn(
-              buttonVariants({
-                size: "sm",
-              })
-            )}
-          >
-            Back to cart
-          </Link>
-        </div>
-      </Shell>
-    )
-  }
+  const deliveryFee = (store?.deliveryFee ?? 0) / 100
+  const total = subtotal + deliveryFee
 
   return (
     <section className="relative flex h-full min-h-dvh flex-col items-start justify-center lg:h-dvh lg:flex-row lg:overflow-hidden">
@@ -107,7 +79,7 @@ export default async function CheckoutPage({ params }: CheckoutPageProps) {
                 aria-hidden="true"
               />
               <div className="block font-medium transition group-hover:hidden">
-                Skateshop
+                Into The Details
               </div>
               <div className="hidden font-medium transition group-hover:block">
                 Back
@@ -126,17 +98,19 @@ export default async function CheckoutPage({ params }: CheckoutPageProps) {
                   isEditable={false}
                   className="container h-full flex-1 pr-8"
                 />
-                <div className="container space-y-4 pr-8">
+                <div className="container space-y-4 pr-8 text-white">
                   <Separator />
                   <div className="flex font-medium">
-                    <div className="flex-1">
-                      Total (
-                      {cartLineItems.reduce(
-                        (acc, item) => acc + Number(item.quantity),
-                        0
-                      )}
-                      )
-                    </div>
+                    <div className="flex-1">Subtotal</div>
+                    <div>{formatPrice(subtotal)}</div>
+                  </div>
+                  <div className="flex text-sm text-muted-foreground italic">
+                    <div className="flex-1">Delivery Fee</div>
+                    <div>{deliveryFee > 0 ? formatPrice(deliveryFee) : "Free"}</div>
+                  </div>
+                  <Separator />
+                  <div className="flex font-bold text-lg">
+                    <div className="flex-1">Total</div>
                     <div>{formatPrice(total)}</div>
                   </div>
                 </div>
@@ -158,7 +132,6 @@ export default async function CheckoutPage({ params }: CheckoutPageProps) {
       </div>
       <CheckoutShell
         paymentIntentPromise={paymentIntentPromise}
-        storeStripeAccountId={store.stripeAccountId}
         className="size-full flex-1 bg-white pb-12 pt-10 lg:flex-initial lg:pl-12 lg:pt-16"
       >
         <ScrollArea className="h-full">

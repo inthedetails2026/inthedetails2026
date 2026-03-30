@@ -14,6 +14,31 @@ export const authSchema = z.object({
     }),
 })
 
+export const signUpSchema = authSchema.extend({
+  name: z.string().min(2, {
+    message: "Name must be at least 2 characters long",
+  }),
+  line1: z.string().min(1, {
+    message: "Address line 1 is required",
+  }),
+  line2: z.string().optional(),
+  city: z.string().min(1, {
+    message: "City is required",
+  }),
+  state: z.string().min(1, {
+    message: "State/Province is required",
+  }),
+  postalCode: z.string().min(1, {
+    message: "Postal code is required",
+  }),
+  country: z.string().min(1, {
+    message: "Country is required",
+  }),
+  phone: z.string().min(8, {
+    message: "Phone number is required and must be at least 8 characters long",
+  }),
+})
+
 export const verifyEmailSchema = z.object({
   code: z
     .string()

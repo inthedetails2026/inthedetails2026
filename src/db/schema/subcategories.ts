@@ -10,8 +10,8 @@ export const subcategories = pgTable(
   "subcategories",
   {
     id: varchar("id", { length: 30 })
-      .$defaultFn(() => generateId())
-      .primaryKey(), // prefix_ + nanoid (12)
+      .$defaultFn(() => generateId("subcategory"))
+      .primaryKey(), // sub_ + nanoid (12)
     name: text("name").notNull().unique(),
     slug: text("slug").unique().notNull(),
     description: text("description"),

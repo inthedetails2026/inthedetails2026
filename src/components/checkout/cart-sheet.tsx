@@ -62,15 +62,23 @@ export async function CartSheet() {
               <div className="space-y-1.5 text-sm">
                 <div className="flex">
                   <span className="flex-1">Shipping</span>
-                  <span>Free</span>
+                  <span>
+                    {cartLineItems[0]?.deliveryFee && cartLineItems[0].deliveryFee > 0
+                      ? formatPrice(cartLineItems[0].deliveryFee / 100)
+                      : "Free"}
+                  </span>
                 </div>
-                <div className="flex">
-                  <span className="flex-1">Taxes</span>
-                  <span>Calculated at checkout</span>
+                <div className="flex font-medium">
+                  <span className="flex-1">Subtotal</span>
+                  <span>{formatPrice(cartTotal.toFixed(2))}</span>
                 </div>
                 <div className="flex">
                   <span className="flex-1">Total</span>
-                  <span>{formatPrice(cartTotal.toFixed(2))}</span>
+                  <span className="font-bold">
+                    {formatPrice(
+                      (cartTotal + (cartLineItems[0]?.deliveryFee ?? 0) / 100).toFixed(2)
+                    )}
+                  </span>
                 </div>
               </div>
               <SheetFooter>

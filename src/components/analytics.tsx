@@ -4,7 +4,8 @@ export function Analytics() {
   return (
     <Loglib
       config={{
-        id: "skateshop_sadmn",
+        id: "intothedetails",
+
       }}
     />
   )

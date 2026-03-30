@@ -119,7 +119,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/build-a-board",
     "/blog",
     "/dashboard/account",
-    "/dashboard/stores",
+    "/admin",
+
     "/dashboard/billing",
     "/dashboard/purchases",
   ].map((route) => ({

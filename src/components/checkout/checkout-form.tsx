@@ -31,6 +31,7 @@ export function CheckoutForm({
   const [email, setEmail] = React.useState("")
   const [message, setMessage] = React.useState<string | null>(null)
   const [isLoading, setIsLoading] = React.useState(false)
+  const [addressValues, setAddressValues] = React.useState<any>(null)
 
   React.useEffect(() => {
     if (!stripe) return
@@ -79,6 +80,11 @@ export function CheckoutForm({
       confirmParams: {
         return_url: absoluteUrl(`/checkout/${storeId}/success`),
         receipt_email: email,
+        shipping: addressValues ? {
+          name: addressValues.name,
+          address: addressValues.address,
+          phone: addressValues.phone,
+        } : undefined,
       },
     })
 
@@ -112,7 +118,12 @@ export function CheckoutForm({
       />
       <AddressElement
         id={`${id}-address-element`}
-        options={{ mode: "shipping" }}
+        options={{ mode: "shipping", fields: { phone: "always" } }}
+        onChange={(e) => {
+          if (e.complete) {
+            setAddressValues(e.value)
+          }
+        }}
       />
       <PaymentElement
         id={`${id}-payment-element`}

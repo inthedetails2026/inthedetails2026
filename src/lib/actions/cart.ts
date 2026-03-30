@@ -50,6 +50,7 @@ export async function getCart(input?: {
         storeId: products.storeId,
         storeName: stores.name,
         storeStripeAccountId: stores.stripeAccountId,
+        deliveryFee: stores.deliveryFee,
       })
       .from(products)
       .leftJoin(stores, eq(stores.id, products.storeId))
@@ -61,7 +62,14 @@ export async function getCart(input?: {
           input?.storeId ? eq(products.storeId, input.storeId) : undefined
         )
       )
-      .groupBy(products.id)
+      .groupBy(
+        products.id,
+        categories.name,
+        subcategories.name,
+        stores.name,
+        stores.stripeAccountId,
+        stores.deliveryFee
+      )
       .orderBy(desc(stores.stripeAccountId), asc(products.createdAt))
       .execute()
       .then((items) => {
@@ -91,17 +99,23 @@ export async function getUniqueStoreIds() {
   if (!cartId) return []
 
   try {
-    const cart = await db
-      .selectDistinct({ storeId: products.storeId })
-      .from(carts)
-      .leftJoin(
-        products,
-        sql`JSON_CONTAINS(carts.items, JSON_OBJECT('productId', products.id))`
-      )
-      .groupBy(products.storeId)
-      .where(eq(carts.id, cartId))
+    const cart = await db.query.carts.findFirst({
+      columns: {
+        items: true,
+      },
+      where: eq(carts.id, cartId),
+    })
 
-    const storeIds = cart.map((item) => item.storeId).filter((id) => id)
+    const productIds = cart?.items?.map((item) => item.productId) ?? []
+    if (productIds.length === 0) return []
+    const uniqueProductIds = [...new Set(productIds)]
+
+    const storeIdsRecords = await db
+      .selectDistinct({ storeId: products.storeId })
+      .from(products)
+      .where(inArray(products.id, uniqueProductIds))
+
+    const storeIds = storeIdsRecords.map((item) => item.storeId).filter((id) => id)
 
     return storeIds
   } catch (err) {
@@ -397,4 +411,22 @@ export async function deleteCartItems(
       error: getErrorMessage(err),
     }
   }
+}
+
+export async function clearCart() {
+  const cookieStore = cookies()
+  const cartId = cookieStore.get("cartId")?.value
+
+  if (cartId) {
+    await db.delete(carts).where(eq(carts.id, cartId))
+  }
+
+  cookieStore.set({
+    name: "cartId",
+    value: "",
+    expires: new Date(0),
+    path: "/",
+  })
+
+  revalidatePath("/")
 }

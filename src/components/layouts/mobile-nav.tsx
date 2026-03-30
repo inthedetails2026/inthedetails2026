@@ -49,8 +49,8 @@ export function MobileNav({ items }: MobileNavProps) {
             className="flex items-center"
             onClick={() => setOpen(false)}
           >
-            <Icons.logo className="mr-2 size-4" aria-hidden="true" />
-            <span className="font-bold">{siteConfig.name}</span>
+            <Icons.logo className="mr-2 size-14" aria-hidden="true" />
+            <span className="font-heading font-bold">{siteConfig.name}</span>
             <span className="sr-only">Home</span>
           </Link>
         </div>

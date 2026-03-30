@@ -6,12 +6,15 @@ import { type Order } from "@/db/schema"
 import type { StripePaymentStatus } from "@/types"
 import { DotsHorizontalIcon } from "@radix-ui/react-icons"
 import { type ColumnDef } from "@tanstack/react-table"
+import { Phone } from "lucide-react"
 
 import {
   getStripePaymentStatusColor,
   stripePaymentStatuses,
 } from "@/lib/checkout"
 import { cn, formatDate, formatId, formatPrice } from "@/lib/utils"
+import { useDataTable } from "@/hooks/use-data-table"
+import type { DataTableFilterField } from "@/types"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -23,10 +26,15 @@ import {
 import { DataTable } from "@/components/data-table/data-table"
 import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header"
 
+type OrderItem = { productId: string; price: number; quantity: number; name?: string }
+
 type AwaitedOrder = Pick<Order, "id" | "quantity" | "amount" | "createdAt"> & {
   customer: string | null
+  name: string | null
   status: string
   paymentIntentId: string
+  items: OrderItem[] | null
+  phone: string | null
 }
 
 interface OrdersTableProps {
@@ -45,7 +53,6 @@ export function OrdersTable({
 }: OrdersTableProps) {
   const { data, pageCount } = React.use(promise)
 
-  // Memoize the columns so they don't re-render on every render
   const columns = React.useMemo<ColumnDef<AwaitedOrder, unknown>[]>(
     () => [
       {
@@ -53,57 +60,96 @@ export function OrdersTable({
         header: ({ column }) => (
           <DataTableColumnHeader column={column} title="Order ID" />
         ),
-        cell: ({ cell }) => {
-          return <span>{formatId(String(cell.getValue()))}</span>
+        cell: ({ cell }) => (
+          <span className="font-mono text-xs">{formatId(String(cell.getValue()))}</span>
+        ),
+      },
+      {
+        accessorKey: "name",
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} title="Customer Name" />
+        ),
+        cell: ({ row }) => (
+          <div>
+            <p className="font-medium">{row.original.name ?? row.original.customer ?? "—"}</p>
+            <p className="text-xs text-muted-foreground">{row.original.customer}</p>
+            {row.original.phone && (
+              <p className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
+                <Phone className="size-3" />
+                {row.original.phone}
+              </p>
+            )}
+          </div>
+        ),
+      },
+      {
+        accessorKey: "items",
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} title="Items Purchased" />
+        ),
+        cell: ({ row }) => {
+          const items = row.original.items
+          if (!items || items.length === 0) return <span className="text-muted-foreground text-xs">—</span>
+          return (
+            <div className="space-y-1">
+              {items.map((item, i) => (
+                <div key={i} className="text-xs">
+                  <span className="font-medium">
+                    {item.name ?? `Product #${item.productId?.slice(0, 6)}`}
+                  </span>
+                  <span className="text-muted-foreground ml-1">
+                    × {item.quantity} @ {formatPrice(item.price)}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )
         },
+        enableSorting: false,
       },
       {
         accessorKey: "status",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Payment Status" />
+          <DataTableColumnHeader column={column} title="Status" />
         ),
-        cell: ({ cell }) => {
-          return (
-            <Badge
-              variant="outline"
-              className={cn(
-                "pointer-events-none text-sm capitalize text-white",
-                getStripePaymentStatusColor({
-                  status: cell.getValue() as StripePaymentStatus,
-                  shade: 600,
-                })
-              )}
-            >
-              {String(cell.getValue())}
-            </Badge>
-          )
-        },
-      },
-      {
-        accessorKey: "customer",
-        header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Customer" />
+        cell: ({ cell }) => (
+          <Badge
+            variant="outline"
+            className={cn(
+              "pointer-events-none text-xs capitalize text-white",
+              getStripePaymentStatusColor({
+                status: cell.getValue() as StripePaymentStatus,
+                shade: 600,
+              })
+            )}
+          >
+            {String(cell.getValue())}
+          </Badge>
         ),
       },
       {
         accessorKey: "quantity",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Quantity" />
+          <DataTableColumnHeader column={column} title="Qty" />
         ),
       },
       {
         accessorKey: "amount",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Amount" />
+          <DataTableColumnHeader column={column} title="Total" />
         ),
-        cell: ({ cell }) => formatPrice(cell.getValue() as number),
+        cell: ({ cell }) => (
+          <span className="font-semibold">{formatPrice(cell.getValue() as number)}</span>
+        ),
       },
       {
         accessorKey: "createdAt",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Created At" />
+          <DataTableColumnHeader column={column} title="Date" />
         ),
-        cell: ({ cell }) => formatDate(cell.getValue() as Date),
+        cell: ({ cell }) => (
+          <span className="text-xs text-muted-foreground">{formatDate(cell.getValue() as Date)}</span>
+        ),
         enableColumnFilter: false,
       },
       {
@@ -121,9 +167,7 @@ export function OrdersTable({
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-[160px]">
               <DropdownMenuItem asChild>
-                <Link
-                  href={`/dashboard/stores/${storeId}/orders/${row.original.id}`}
-                >
+                <Link href={`/admin/orders/${row.original.id}`}>
                   View details
                 </Link>
               </DropdownMenuItem>
@@ -144,28 +188,30 @@ export function OrdersTable({
     [storeId]
   )
 
-  return null
+  const filterFields: DataTableFilterField<AwaitedOrder>[] = [
+    {
+      label: "Customer",
+      value: "customer",
+      placeholder: "Filter by email...",
+    },
+    {
+      label: "Status",
+      value: "status",
+      options: stripePaymentStatuses,
+    },
+  ]
 
-  // return (
-  //   <DataTable
-  //     pageCount={pageCount}
-  //     searchableColumns={
-  //       isSearchable
-  //         ? [
-  //             {
-  //               id: "customer",
-  //               title: "customers",
-  //             },
-  //           ]
-  //         : []
-  //     }
-  //     filterableColumns={[
-  //       {
-  //         id: "status",
-  //         title: "Status",
-  //         options: stripePaymentStatuses,
-  //       },
-  //     ]}
-  //   />
-  // )
+  const { table } = useDataTable({
+    data,
+    columns,
+    pageCount,
+    filterFields,
+    defaultSort: "createdAt.desc",
+  })
+
+  return (
+    <DataTable
+      table={table}
+    />
+  )
 }

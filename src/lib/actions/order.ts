@@ -1,5 +1,6 @@
 "use server"
 
+import { env } from "@/env.js"
 import { unstable_noStore as noStore } from "next/cache"
 import { cookies } from "next/headers"
 import { db } from "@/db"
@@ -24,6 +25,7 @@ import {
   inArray,
   like,
   lte,
+  or,
   sql,
 } from "drizzle-orm"
 import type Stripe from "stripe"
@@ -34,6 +36,8 @@ import {
   type CartLineItemSchema,
   type CheckoutItemSchema,
 } from "@/lib/validations/cart"
+import { generateId } from "@/lib/id"
+import { getStoreId, getStore } from "@/lib/store"
 import type { getOrderLineItemsSchema } from "@/lib/validations/order"
 import { ordersSearchParamsSchema } from "@/lib/validations/params"
 
@@ -87,112 +91,9 @@ export async function getOrderLineItems(
         })
       })
 
-    // Temporary workaround for payment_intent.succeeded webhook event not firing in production
-    // TODO: Remove this once the webhook is working
-    if (input.paymentIntent?.status === "succeeded") {
-      const cartId = String(cookies().get("cartId")?.value)
-
-      const cart = await db.query.carts.findFirst({
-        columns: {
-          closed: true,
-          paymentIntentId: true,
-          clientSecret: true,
-        },
-        where: eq(carts.id, cartId),
-      })
-
-      if (!cart || cart.closed) {
-        return lineItems
-      }
-
-      if (!cart.clientSecret || !cart.paymentIntentId) {
-        return lineItems
-      }
-
-      const payment = await db.query.payments.findFirst({
-        columns: {
-          storeId: true,
-          stripeAccountId: true,
-        },
-        where: eq(payments.storeId, input.storeId),
-      })
-
-      if (!payment?.stripeAccountId) {
-        return lineItems
-      }
-
-      // Create new address in DB
-      const stripeAddress = input.paymentIntent.shipping?.address
-
-      const newAddress = await db
-        .insert(addresses)
-        .values({
-          line1: stripeAddress?.line1,
-          line2: stripeAddress?.line2,
-          city: stripeAddress?.city,
-          state: stripeAddress?.state,
-          country: stripeAddress?.country,
-          postalCode: stripeAddress?.postal_code,
-        })
-        .returning({ insertedId: addresses.id })
-
-      if (!newAddress[0]?.insertedId) throw new Error("No address created.")
-
-      // Create new order in db
-      await db.insert(orders).values({
-        storeId: payment.storeId,
-        items: input.items as unknown as CheckoutItemSchema[],
-        quantity: safeParsedItems.data.reduce(
-          (acc, item) => acc + item.quantity,
-          0
-        ),
-        amount: String(Number(input.paymentIntent.amount) / 100),
-        stripePaymentIntentId: input.paymentIntent.id,
-        stripePaymentIntentStatus: input.paymentIntent.status,
-        name: input.paymentIntent.shipping?.name ?? "",
-        email: input.paymentIntent.receipt_email ?? "",
-        addressId: newAddress[0].insertedId,
-      })
-
-      // Update product inventory in db
-      for (const item of safeParsedItems.data) {
-        const product = await db.query.products.findFirst({
-          columns: {
-            id: true,
-            inventory: true,
-          },
-          where: eq(products.id, item.productId),
-        })
-
-        if (!product) {
-          return lineItems
-        }
-
-        const inventory = product.inventory - item.quantity
-
-        if (inventory < 0) {
-          return lineItems
-        }
-
-        await db
-          .update(products)
-          .set({
-            inventory: product.inventory - item.quantity,
-          })
-          .where(eq(products.id, item.productId))
-      }
-
-      await db
-        .update(carts)
-        .set({
-          closed: true,
-          items: [],
-        })
-        .where(eq(carts.paymentIntentId, cart.paymentIntentId))
-    }
-
     return lineItems
   } catch (err) {
+    console.error("DEBUG: CRITICAL Order Line Items Discovery Failure:", err)
     return []
   }
 }
@@ -251,9 +152,9 @@ export async function getStoreOrders(input: {
             // Filter by createdAt
             fromDay && toDay
               ? and(
-                  gte(orders.createdAt, fromDay),
-                  lte(orders.createdAt, toDay)
-                )
+                gte(orders.createdAt, fromDay),
+                lte(orders.createdAt, toDay)
+              )
               : undefined
           )
         )
@@ -282,9 +183,9 @@ export async function getStoreOrders(input: {
             // Filter by createdAt
             fromDay && toDay
               ? and(
-                  gte(orders.createdAt, fromDay),
-                  lte(orders.createdAt, toDay)
-                )
+                gte(orders.createdAt, fromDay),
+                lte(orders.createdAt, toDay)
+              )
               : undefined
           )
         )
@@ -347,7 +248,7 @@ export async function getSaleCount(input: {
 
     const storeOrders = await db
       .select({
-        amount: orders.amount,
+        netAmount: orders.netAmount,
       })
       .from(orders)
       .where(
@@ -360,7 +261,7 @@ export async function getSaleCount(input: {
       )
 
     const sales = storeOrders.reduce(
-      (acc, order) => acc + Number(order.amount),
+      (acc, order) => acc + Number(order.netAmount),
       0
     )
 
@@ -383,7 +284,7 @@ export async function getSales(input: {
       .select({
         year: sql`EXTRACT(YEAR FROM ${orders.createdAt})`.mapWith(Number),
         month: sql`EXTRACT(MONTH FROM ${orders.createdAt})`.mapWith(Number),
-        totalSales: sql`SUM(${orders.amount})`.mapWith(Number),
+        totalSales: sql`SUM(${orders.netAmount})`.mapWith(Number),
       })
       .from(orders)
       .where(
@@ -424,7 +325,7 @@ export async function getCustomers(input: {
         .select({
           email: orders.email,
           name: orders.name,
-          totalSpent: sql<number>`sum(${orders.amount})`,
+          totalSpent: sql<number>`sum(${orders.netAmount})`,
         })
         .from(orders)
         .limit(limit)
@@ -434,9 +335,9 @@ export async function getCustomers(input: {
             eq(orders.storeId, storeId),
             fromDay && toDay
               ? and(
-                  gte(orders.createdAt, fromDay),
-                  lte(orders.createdAt, toDay)
-                )
+                gte(orders.createdAt, fromDay),
+                lte(orders.createdAt, toDay)
+              )
               : undefined
           )
         )
@@ -453,9 +354,9 @@ export async function getCustomers(input: {
             eq(orders.storeId, storeId),
             fromDay && toDay
               ? and(
-                  gte(orders.createdAt, fromDay),
-                  lte(orders.createdAt, toDay)
-                )
+                gte(orders.createdAt, fromDay),
+                lte(orders.createdAt, toDay)
+              )
               : undefined
           )
         )

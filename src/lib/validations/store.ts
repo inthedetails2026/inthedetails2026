@@ -31,13 +31,16 @@ export const getStoresSchema = z.object({
   price_range: z.string().optional(),
   store_ids: z.string().optional(),
   store_page: z.coerce.number().default(1),
-  active: z.string().optional().default("true"),
+  active: z.string().optional().default("false"),
   user_id: z.string().optional(),
 })
 
 export const updateStoreSchema = z.object({
   name: z.string().min(3).max(50),
   description: z.string().optional(),
+  processingFeePercent: z.coerce.number().min(0).max(100).default(2.9),
+  processingFeeFixed: z.coerce.number().min(0).default(30),
+  deliveryFee: z.coerce.number().min(0).default(0),
 })
 
 export type CreateStoreSchema = z.infer<typeof createStoreSchema>

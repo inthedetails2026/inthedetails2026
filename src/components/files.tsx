@@ -23,7 +23,7 @@ export function Files({ files }: FilesProps) {
         <CardDescription>View the uploaded files here</CardDescription>
       </CardHeader>
       <CardContent>
-        {files.length > 0 ? (
+        {Array.isArray(files) && files.length > 0 ? (
           <ScrollArea className="pb-4">
             <div className="flex w-max space-x-2.5">
               {files.map((file) => (

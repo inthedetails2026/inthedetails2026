@@ -19,27 +19,27 @@ export function StoreTabs({ storeId }: StoreTabsProps) {
   const tabs = [
     {
       title: "Store",
-      href: `/dashboard/stores/${storeId}`,
+      href: `/admin`,
       isActive: segment === null,
     },
     {
       title: "Products",
-      href: `/dashboard/stores/${storeId}/products`,
+      href: `/admin/products`,
       isActive: segment === "products",
     },
     {
       title: "Orders",
-      href: `/dashboard/stores/${storeId}/orders`,
+      href: `/admin/orders`,
       isActive: segment === "orders",
     },
     {
       title: "Customers",
-      href: `/dashboard/stores/${storeId}/customers`,
+      href: `/admin/customers`,
       isActive: segment === "customers",
     },
     {
       title: "Analytics",
-      href: `/dashboard/stores/${storeId}/analytics`,
+      href: `/admin/analytics`,
       isActive: segment === "analytics",
     },
   ]

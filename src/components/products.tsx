@@ -47,9 +47,11 @@ import { PaginationButton } from "@/components/pagination-button"
 import { ProductCard } from "@/components/product-card"
 
 interface ProductsProps {
-  products: Product[]
+  products: (Pick<Product, "id" | "name" | "price" | "images" | "inventory"> & {
+    category: string | null
+  })[]
   pageCount: number
-  categories?: string[]
+  categories?: { id: string; name: string }[]
   category?: Awaited<ReturnType<typeof getCategories>>[number]
   subcategories?: Awaited<ReturnType<typeof getSubcategoriesByCategory>>
   stores?: Pick<
@@ -208,31 +210,7 @@ export function Products({
             </SheetHeader>
             <Separator />
             <div className="flex flex-1 flex-col gap-5 overflow-hidden p-1">
-              <div className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
-                <div className="space-y-0.5">
-                  <Label htmlFor={`active-${id}`}>Active stores</Label>
-                  <CardDescription>
-                    Only show products from stores that are connected to Stripe
-                  </CardDescription>
-                </div>
-                <Switch
-                  id={`active-${id}`}
-                  checked={active === "true"}
-                  onCheckedChange={(value) =>
-                    startTransition(() => {
-                      router.push(
-                        `${pathname}?${createQueryString({
-                          active: value ? "true" : "false",
-                        })}`,
-                        {
-                          scroll: false,
-                        }
-                      )
-                    })
-                  }
-                  disabled={isPending}
-                />
-              </div>
+
               <Card className="space-y-4 rounded-lg p-3">
                 <h3 className="text-sm font-medium tracking-wide text-foreground">
                   Price range ($)
@@ -284,8 +262,8 @@ export function Products({
                     selected={selectedCategories}
                     setSelected={setSelectedCategories}
                     options={categories.map((c) => ({
-                      label: toTitleCase(c),
-                      value: c,
+                      label: c.name,
+                      value: c.id,
                     }))}
                   />
                 </Card>
@@ -308,100 +286,7 @@ export function Products({
                   />
                 </Card>
               ) : null}
-              {stores?.length ? (
-                <Card className="space-y-4 overflow-hidden rounded-lg py-3 pl-3">
-                  <div className="flex gap-2 pr-3">
-                    <h3 className="flex-1 text-sm font-medium tracking-wide text-foreground">
-                      Stores
-                    </h3>
-                    <div className="flex items-center space-x-2">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="size-8"
-                        onClick={() => {
-                          startTransition(() => {
-                            router.push(
-                              `${pathname}?${createQueryString({
-                                store_page: Number(store_page) - 1,
-                              })}`,
-                              {
-                                scroll: false,
-                              }
-                            )
-                          })
-                        }}
-                        disabled={Number(store_page) === 1 || isPending}
-                      >
-                        <ChevronLeftIcon
-                          className="size-4"
-                          aria-hidden="true"
-                        />
-                        <span className="sr-only">Previous store page</span>
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="size-8"
-                        onClick={() => {
-                          startTransition(() => {
-                            router.push(
-                              `${pathname}?${createQueryString({
-                                store_page: Number(store_page) + 1,
-                              })}`,
-                              {
-                                scroll: false,
-                              }
-                            )
-                          })
-                        }}
-                        disabled={
-                          Number(store_page) === storePageCount || isPending
-                        }
-                      >
-                        <ChevronRightIcon
-                          className="size-4"
-                          aria-hidden="true"
-                        />
-                        <span className="sr-only">Next store page</span>
-                      </Button>
-                    </div>
-                  </div>
-                  <ScrollArea className="h-full pb-12">
-                    <div className="space-y-4">
-                      {stores.map((store) => (
-                        <div
-                          key={store.id}
-                          className="flex items-center space-x-2"
-                        >
-                          <Checkbox
-                            id={`${id}-store-${store.id}`}
-                            checked={storeIds?.includes(store.id) ?? false}
-                            onCheckedChange={(value) => {
-                              if (value) {
-                                setStoreIds([...(storeIds ?? []), store.id])
-                              } else {
-                                setStoreIds(
-                                  storeIds?.filter((id) => id !== store.id) ??
-                                    null
-                                )
-                              }
-                            }}
-                          />
-                          <Label
-                            htmlFor={`${id}-store-${store.id}`}
-                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                          >
-                            {`${truncate(store.name, 20)} (${
-                              store.productCount
-                            })`}
-                          </Label>
-                        </div>
-                      ))}
-                    </div>
-                  </ScrollArea>
-                </Card>
-              ) : null}
+
             </div>
             <div>
               <Separator className="my-4" />
@@ -414,18 +299,18 @@ export function Products({
                     startTransition(() => {
                       router.push(
                         `${pathname}?${createQueryString({
-                          price_range: 0 - 100,
+                          price_range: null,
                           store_ids: null,
                           categories: null,
                           subcategories: null,
-                          active: "true",
+                          active: "false",
                         })}`,
                         {
                           scroll: false,
                         }
                       )
 
-                      setPriceRange([0, 100])
+                      setPriceRange([0, 500])
                       setSelectedCategories(null)
                       setSelectedSubcategories(null)
                       setStoreIds(null)
@@ -480,10 +365,32 @@ export function Products({
           </p>
         </div>
       ) : null}
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {/* {products.map((product) => (
-          <ProductCard key={product.id} product={product} />
-        ))} */}
+      <div className="space-y-14">
+        {(!categoriesParam && !subcategoriesParam && !searchParams?.get("price_range")) ? (
+          // Group by category when no filters are active
+          Array.from(new Set(products.map(p => p.category))).map((catName) => (
+            <div key={catName || "other"} className="space-y-6">
+              <div className="flex items-center gap-4">
+                <h2 className="text-xl font-bold capitalize tracking-tight">{catName || "Other"}</h2>
+                <div className="h-px flex-1 bg-gradient-to-r from-border to-transparent" />
+              </div>
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                {products
+                  .filter((p) => p.category === catName)
+                  .map((product) => (
+                    <ProductCard key={product.id} product={product} />
+                  ))}
+              </div>
+            </div>
+          ))
+        ) : (
+          // Normal grid when filtering
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {products.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        )}
       </div>
       {products.length ? (
         <PaginationButton
