@@ -5,7 +5,7 @@ export function Analytics() {
     <Loglib
       config={{
         id: "intothedetails",
-
+        host: "/ingest",
       }}
     />
   )

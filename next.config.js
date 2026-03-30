@@ -24,6 +24,14 @@ const nextConfig = {
   // Already doing linting and typechecking as separate tasks in CI
   eslint: { ignoreDuringBuilds: true },
   typescript: { ignoreBuildErrors: true },
+  async rewrites() {
+    return [
+      {
+        source: "/ingest/:path*",
+        destination: "https://api.loglib.io/:path*",
+      },
+    ]
+  },
 }
 
 export default withContentlayer(nextConfig)
