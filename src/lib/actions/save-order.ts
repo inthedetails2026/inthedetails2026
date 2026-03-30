@@ -132,7 +132,7 @@ export async function saveOrder(paymentIntentId: string): Promise<{ orderId: str
       });
 
       await resend.emails.send({
-        from: env.EMAIL_NOREPLY_ADDRESS,
+        from: `Into The Details <${env.EMAIL_NOREPLY_ADDRESS}>`,
         to: paymentIntent.receipt_email ?? "",
         subject: `Order Confirmation - ${newOrder.id}`,
         react: OrderConfirmationEmail({
@@ -149,7 +149,7 @@ export async function saveOrder(paymentIntentId: string): Promise<{ orderId: str
       const addr = paymentIntent.shipping?.address;
       
       await resend.emails.send({
-        from: env.EMAIL_NOREPLY_ADDRESS,
+        from: `Into The Details <${env.EMAIL_NOREPLY_ADDRESS}>`,
         to: adminEmail,
         subject: `🚨 New Order: ${newOrder.id} - ${paymentIntent.shipping?.name}`,
         react: AdminOrderNotificationEmail({

@@ -38,7 +38,7 @@ export async function POST(req: Request) {
 
     await Promise.all([
       resend.emails.send({
-        from: env.EMAIL_NOREPLY_ADDRESS,
+        from: `Into The Details <${env.EMAIL_NOREPLY_ADDRESS}>`,
         to: input.email,
         subject: input.subject ?? "Welcome to Into The Details",
         react: NewsletterWelcomeEmail({

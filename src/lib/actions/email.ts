@@ -8,7 +8,7 @@ import { getErrorMessage } from "@/lib/handle-error"
 export async function sendContactEmail(input: ContactEmailSchema) {
   try {
     await resend.emails.send({
-      from: env.EMAIL_FROM_ADDRESS,
+      from: `Into The Details <${env.EMAIL_NOREPLY_ADDRESS}>`,
       to: "info@inthedetails.net",
       reply_to: input.email,
       subject: `New Contact Form Submission: ${input.subject}`,

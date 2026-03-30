@@ -34,7 +34,7 @@ export async function updateNotification(input: UpdateNotificationSchema) {
 
     if (input.newsletter && !notification.newsletter) {
       await resend.emails.send({
-        from: env.EMAIL_NOREPLY_ADDRESS,
+        from: `Into The Details <${env.EMAIL_NOREPLY_ADDRESS}>`,
         to: notification.email,
         subject: "Welcome to Into The Details",
 
