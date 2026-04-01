@@ -10,7 +10,6 @@ import { getErrorMessage } from "@/lib/handle-error"
 import { resend } from "@/lib/resend"
 import { createClient } from "@/lib/supabase/server"
 import type { UpdateNotificationSchema } from "@/lib/validations/notification"
-import NewsletterWelcomeEmail from "@/components/emails/newsletter-welcome-email"
 
 export async function updateNotification(input: UpdateNotificationSchema) {
   try {
@@ -19,33 +18,6 @@ export async function updateNotification(input: UpdateNotificationSchema) {
       data: { user },
     } = await supabase.auth.getUser()
 
-    const notification = await db
-      .select({
-        email: notifications.email,
-        newsletter: notifications.newsletter,
-      })
-      .from(notifications)
-      .where(eq(notifications.token, input.token))
-      .then((res) => res[0])
-
-    if (!notification) {
-      throw new Error("Email not found.")
-    }
-
-    if (input.newsletter && !notification.newsletter) {
-      await resend.emails.send({
-        from: `Into The Details <${env.EMAIL_NOREPLY_ADDRESS}>`,
-        to: notification.email,
-        subject: "Welcome to Into The Details",
-
-        react: NewsletterWelcomeEmail({
-          firstName: user?.user_metadata?.full_name?.split(" ")[0] ?? "User",
-
-          fromEmail: env.EMAIL_NOREPLY_ADDRESS,
-          token: input.token,
-        }),
-      })
-    }
 
     await db
       .update(notifications)

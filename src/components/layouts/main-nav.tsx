@@ -26,7 +26,7 @@ export function MainNav({ items }: MainNavProps) {
     <div className="hidden gap-6 lg:flex">
       <Link href="/" className="hidden items-center space-x-2 lg:flex">
         <Icons.logo className="size-16" aria-hidden="true" />
-        <span className="hidden font-heading font-bold lg:inline-block">
+        <span className="hidden font-brand text-3xl lg:inline-block">
           {siteConfig.name}
         </span>
         <span className="sr-only">Home</span>
@@ -47,7 +47,7 @@ export function MainNav({ items }: MainNavProps) {
                         className="flex size-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
                       >
                         <Icons.logo className="size-6" aria-hidden="true" />
-                        <div className="mb-2 mt-4 text-lg font-medium">
+                        <div className="mb-2 mt-4 text-3xl font-brand">
                           {siteConfig.name}
                         </div>
                         <p className="text-sm leading-tight text-muted-foreground">

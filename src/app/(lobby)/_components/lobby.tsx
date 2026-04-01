@@ -47,7 +47,7 @@ export async function Lobby({
         withPadding
       >
         <PageHeaderHeading
-          className="animate-fade-up"
+          className="animate-fade-up font-brand text-7xl sm:text-8xl md:text-9xl"
           style={{ animationDelay: "0.20s", animationFillMode: "both" }}
         >
           {siteConfig.name}

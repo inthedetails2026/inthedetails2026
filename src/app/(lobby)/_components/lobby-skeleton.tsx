@@ -27,7 +27,7 @@ export function LobbySkeleton() {
       >
         <Skeleton className="h-7 w-44 rounded-full" />
         <PageHeaderHeading
-          className="animate-fade-up"
+          className="animate-fade-up font-brand text-7xl sm:text-8xl md:text-9xl"
           style={{ animationDelay: "0.20s", animationFillMode: "both" }}
         >
           {siteConfig.name}

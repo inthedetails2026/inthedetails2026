@@ -40,6 +40,9 @@ export async function SiteHeader({ user }: SiteHeaderProps) {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background font-heading">
+      <div className="bg-yellow-100 py-1.5 text-center text-xs font-medium text-yellow-900 dark:bg-yellow-950/30 dark:text-yellow-400">
+        Site under construction • Thanks for visiting!
+      </div>
       <div className="container flex h-20 items-center">
         <MainNav items={dynamicMainNav} />
         <MobileNav items={dynamicMainNav} />

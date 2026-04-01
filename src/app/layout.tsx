@@ -10,7 +10,7 @@ import { env } from "@/env.js"
 import { GeistSans } from "geist/font/sans"
 
 import { siteConfig } from "@/config/site"
-import { fontHeading, fontMono, fontSans } from "@/lib/fonts"
+import { fontBrand, fontHeading, fontMono, fontSans } from "@/lib/fonts"
 import { absoluteUrl, cn } from "@/lib/utils"
 import { Toaster } from "@/components/ui/toaster"
 import { Analytics } from "@/components/analytics"
@@ -30,9 +30,9 @@ export const metadata: Metadata = {
     "react",
     "react server components",
     "intothedetails",
-
-    "skateboarding",
-    "kickflip",
+    "home decor",
+    "interior design",
+    "furniture",
   ],
   authors: [
     {
@@ -105,7 +105,8 @@ export default function RootLayout({ children }: RootLayoutProps) {
           "min-h-screen bg-background font-sans antialiased",
           fontSans.variable,
           fontMono.variable,
-          fontHeading.variable
+          fontHeading.variable,
+          fontBrand.variable
         )}
       >
         <ThemeProvider

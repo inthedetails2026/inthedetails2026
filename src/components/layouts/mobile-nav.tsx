@@ -50,7 +50,7 @@ export function MobileNav({ items }: MobileNavProps) {
             onClick={() => setOpen(false)}
           >
             <Icons.logo className="mr-2 size-14" aria-hidden="true" />
-            <span className="font-heading font-bold">{siteConfig.name}</span>
+            <span className="font-brand text-3xl">{siteConfig.name}</span>
             <span className="sr-only">Home</span>
           </Link>
         </div>

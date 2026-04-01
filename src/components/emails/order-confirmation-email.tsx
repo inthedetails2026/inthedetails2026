@@ -49,7 +49,7 @@ export default function OrderConfirmationEmail({
               <Heading className="text-2xl font-bold tracking-tight">
                 Into The Details
               </Heading>
-              <Text className="text-zinc-500">Premium Skateboard Shop</Text>
+              <Text className="text-zinc-500">In The Details</Text>
             </Section>
 
             <Hr className="my-8 border-zinc-200" />

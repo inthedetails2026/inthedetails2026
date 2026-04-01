@@ -56,7 +56,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       {/* Sidebar */}
       <aside className="hidden w-64 flex-col border-r bg-muted/40 md:flex">
         <div className="flex h-14 items-center border-b px-6">
-          <Link href="/admin" className="font-bold">
+          <Link href="/admin" className="font-brand text-2xl font-bold">
             Admin Panel
           </Link>
         </div>

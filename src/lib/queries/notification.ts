@@ -16,7 +16,6 @@ export async function getNotification(input: {
       .select({
         token: notifications.token,
         email: notifications.email,
-        newsletter: notifications.newsletter,
         marketing: notifications.marketing,
       })
       .from(notifications)

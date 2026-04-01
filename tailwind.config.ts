@@ -157,6 +157,7 @@ export default {
         sans: ["var(--font-sans)", ...fontFamily.sans],
         mono: ["var(--font-geist-mono)", ...fontFamily.mono],
         heading: ["var(--font-heading)", ...fontFamily.sans],
+        brand: ["var(--font-brand)", ...fontFamily.sans],
       },
       keyframes: {
         "accordion-down": {

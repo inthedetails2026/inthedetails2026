@@ -1,4 +1,4 @@
-import { Cormorant_Garamond, Outfit } from "next/font/google"
+import { Cormorant_Garamond, Outfit, Great_Vibes } from "next/font/google"
 import { GeistMono } from "geist/font/mono"
 
 export const fontSans = Outfit({
@@ -12,4 +12,10 @@ export const fontHeading = Cormorant_Garamond({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
   variable: "--font-heading",
+})
+
+export const fontBrand = Great_Vibes({
+  subsets: ["latin"],
+  weight: ["400"],
+  variable: "--font-brand",
 })
