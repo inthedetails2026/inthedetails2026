@@ -39,6 +39,11 @@ export function ResetPasswordForm() {
   async function onSubmit(data: Inputs) {
     setLoading(true)
     try {
+      // Mark that a password reset is in progress so the /auth/callback
+      // route can reliably redirect to the update-password page.
+      document.cookie =
+        "pwd_reset_pending=1; path=/; max-age=600; samesite=lax"
+
       const { error } = await supabase.auth.resetPasswordForEmail(data.email, {
         redirectTo: `${window.location.origin}/auth/callback`,
       })

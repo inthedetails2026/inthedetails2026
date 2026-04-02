@@ -56,13 +56,24 @@ export async function GET(request: Request) {
   if (code) {
     const { data, error } = await supabase.auth.exchangeCodeForSession(code)
     if (!error && data.session) {
-      // Detect password recovery via JWT AMR claim or explicit type param.
-      // Recovery sessions have amr: [{method: "otp"}].
+      // Primary: cookie set by the reset-password form (same-browser flow)
+      const resetCookie = cookieStore.get("pwd_reset_pending")?.value === "1"
+      // Secondary: explicit type param OR JWT AMR claim (cross-device fallback)
       const isRecovery =
-        type === "recovery" || isRecoveryToken(data.session.access_token)
+        resetCookie ||
+        type === "recovery" ||
+        isRecoveryToken(data.session.access_token)
 
       if (isRecovery) {
-        return NextResponse.redirect(`${origin}/signin/update-password`)
+        const response = NextResponse.redirect(
+          `${origin}/signin/update-password`
+        )
+        // Clear the intent cookie so it cannot be replayed
+        response.cookies.set("pwd_reset_pending", "", {
+          maxAge: 0,
+          path: "/",
+        })
+        return response
       }
       return NextResponse.redirect(`${origin}${next}`)
     }
