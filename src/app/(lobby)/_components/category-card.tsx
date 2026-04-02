@@ -7,7 +7,7 @@ import {
   type getCategories,
 } from "@/lib/queries/product"
 import { AspectRatio } from "@/components/ui/aspect-ratio"
-import { Card, CardDescription, CardTitle } from "@/components/ui/card"
+import { Card, CardTitle } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Icons } from "@/components/icons"
 
@@ -43,9 +43,6 @@ export function CategoryCard({ category }: CategoryCardProps) {
           <CardTitle className="font-heading text-lg capitalize md:text-xl">
             {category.name}
           </CardTitle>
-          <CardDescription className="mt-1 line-clamp-2 text-xs text-white/90 md:text-sm">
-            {category.description}
-          </CardDescription>
           <div className="mt-2 text-[0.7rem] text-white/70">
             <React.Suspense
               fallback={<Skeleton className="h-3 w-16 bg-white/20" />}
