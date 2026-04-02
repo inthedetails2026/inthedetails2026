@@ -1,9 +1,7 @@
 import Link from "next/link"
 
 import { siteConfig } from "@/config/site"
-import { type getGithubStars } from "@/lib/queries/github"
 import type { getCategories, getFeaturedProducts } from "@/lib/queries/product"
-import { type getFeaturedStores } from "@/lib/queries/store"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { buttonVariants } from "@/components/ui/button"
@@ -22,19 +20,16 @@ import { StoreCard } from "@/components/store-card"
 import { CategoryCard } from "./category-card"
 
 interface LobbyProps {
-  githubStarsPromise: ReturnType<typeof getGithubStars>
   productsPromise: ReturnType<typeof getFeaturedProducts>
   categoriesPromise: ReturnType<typeof getCategories>
 }
 
 export async function Lobby({
-  githubStarsPromise,
   productsPromise,
   categoriesPromise,
 }: LobbyProps) {
   // @see the "Parallel data fetching" docs: https://nextjs.org/docs/app/building-your-application/data-fetching/patterns#parallel-data-fetching
-  const [githubStars, products, categories] = await Promise.all([
-    githubStarsPromise,
+  const [products, categories] = await Promise.all([
     productsPromise,
     categoriesPromise,
   ])

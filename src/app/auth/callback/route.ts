@@ -36,10 +36,19 @@ export async function GET(request: Request) {
 
   // Handle PKCE flow (code exchange)
   if (code) {
-    const { error } = await supabase.auth.exchangeCodeForSession(code)
+    const { data, error } = await supabase.auth.exchangeCodeForSession(code)
     if (!error) {
-      if (type === "recovery") {
-        // Redirect to update-password page after recovery
+      // Check if this is a password recovery session.
+      // Supabase sets amr to [{method: 'otp'}] for recovery flows.
+      // We also check the explicit type param as a fallback.
+      const isRecovery =
+        type === "recovery" ||
+        data.session?.user?.app_metadata?.provider === undefined && // not OAuth
+          (data.session as any)?.amr?.some(
+            (entry: { method: string }) => entry.method === "otp"
+          )
+
+      if (isRecovery) {
         return NextResponse.redirect(`${origin}/signin/update-password`)
       }
       return NextResponse.redirect(`${origin}${next}`)
